@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+// New global var I will use to launch app
+var New *Router
+
+// Handle is a function that can be registered to a route to handle HTTP
+// requests. Like http.HandlerFunc, but has a third parameter for the values of
+// wildcards (variables).
 type Handle func(http.ResponseWriter, *http.Request)
 type Handler interface {
 	ServerHTTP(http.ResponseWriter, *http.Request)
@@ -33,8 +39,6 @@ type Params []Param
 type Router struct {
 	paths map[string][]route
 }
-
-var New *Router
 
 func NewRouter() *Router {
 	New = new(Router)
@@ -91,7 +95,7 @@ func (r *Router) Delete(pattern string, handle Handle) {
 // This function is intended for bulk loading and to allow the usage of less
 // frequently used, non-standardized or custom methods (e.g. for internal
 // communication with a proxy).
-func (r *Router) Handle(verb string, pattern string, handler Handle) bool {
+func (r *Router) Handle(verb, pattern string, handler Handle) bool {
 	var routeExists bool
 	// word := "UPDATE"
 	// capitalise the word if in lowercase
@@ -147,7 +151,7 @@ func (r *Router) Handle(verb string, pattern string, handler Handle) bool {
 
 // Handler is an adapter which allows the usage of an http.Handler as a
 // request handle.
-func (r *Router) Handler(method string, path string, handler http.Handler) {
+func (r *Router) Handler(method, path string, handler http.Handler) {
 	r.Handle(method, path,
 		func(w http.ResponseWriter, req *http.Request) {
 			handler.ServeHTTP(w, req)
@@ -157,7 +161,7 @@ func (r *Router) Handler(method string, path string, handler http.Handler) {
 
 // HandlerFunc is an adapter which allows the usage of an http.HandlerFunc as a
 // request handle.
-func (r *Router) HandlerFunc(method string, path string, handler http.HandlerFunc) {
+func (r *Router) HandlerFunc(method, path string, handler http.HandlerFunc) {
 	r.Handler(method, path, handler)
 }
 
@@ -167,7 +171,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// r.Handler(req.Method, h[0].pattern, h[0].handler)
 }
 
-func (r *Router) Serve() {
+func (r *Router) Run() {
 	fmt.Println("Server deployed at 3000")
 	http.ListenAndServe(":3000", r)
 }

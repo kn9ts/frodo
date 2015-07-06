@@ -15,5 +15,5 @@ func main() {
 		w.Write([]byte("Hello nested page!")) // send data to client side
 	})
 
-	App.Serve()
+	App.Run()
 }
