@@ -3,79 +3,95 @@ package frodo
 import (
 	"fmt"
 	"net/http"
+	// "reflect"
 	"strings"
 )
+
+type Handle func(http.ResponseWriter, *http.Request)
+type Handler interface {
+	ServerHTTP(http.ResponseWriter, *http.Request)
+}
 
 type route struct {
 	pattern     string
 	parentRoute string
 	name        string
-	handler     interface{}
+	handler     Handle
 	isRegex     interface{}
 	priority    int
 	depth       int
-}
-
-// Router Array Map: {"POST": [r,r,r,r,r,r....], "POST": [r,r,r,r,r,r....]}
-type Router struct {
-	paths map[string][]route
 }
 
 type Param struct {
 	key   string
 	value interface{}
 }
-
 type Params []Param
-type Handle func(w http.ResponseWriter, r *http.Request)
-type Handler interface {
-	ServerHTTP(w http.ResponseWriter, r *http.Request)
+
+// Router is a http.Handler which can be used to dispatch requests to different
+// handler functions via configurable routes
+type Router struct {
+	paths map[string][]route
 }
 
 var New *Router
 
-// Application creates a new instance for Routing
+func NewRouter() *Router {
+	New = new(Router)
+	return New
+}
+
+// Make sure the Router conforms with the http.Handler interface
+// var _ http.Handler = NewRouter()
 func (r *Router) Application() *Router {
 	New = new(Router)
 	return New
 }
 
-// GET is a shortcut for router.Add("GET", pattern, handle)
+// Get is a shortcut for router.Add("GET", pattern, handle)
 func (r *Router) Get(pattern string, handle Handle) {
-	r.Add("GET", pattern, handle)
+	r.Handle("GET", pattern, handle)
 }
 
-// HEAD is a shortcut for router.Add("HEAD", pattern, handle)
+// Head is a shortcut for router.Add("HEAD", pattern, handle)
 func (r *Router) Head(pattern string, handle Handle) {
-	r.Add("HEAD", pattern, handle)
+	r.Handle("HEAD", pattern, handle)
 }
 
-// OPTIONS is a shortcut for router.Add("OPTIONS", pattern, handle)
+// Options is a shortcut for router.Add("OPTIONS", pattern, handle)
 func (r *Router) Options(pattern string, handle Handle) {
-	r.Add("OPTIONS", pattern, handle)
+	r.Handle("OPTIONS", pattern, handle)
 }
 
-// POST is a shortcut for router.Add("POST", pattern, handle)
+// Post is a shortcut for router.Add("POST", pattern, handle)
 func (r *Router) Post(pattern string, handle Handle) {
-	r.Add("POST", pattern, handle)
+	r.Handle("POST", pattern, handle)
 }
 
-// PUT is a shortcut for router.Add("PUT", pattern, handle)
+// Put is a shortcut for router.Add("PUT", pattern, handle)
 func (r *Router) Put(pattern string, handle Handle) {
-	r.Add("PUT", pattern, handle)
+	r.Handle("PUT", pattern, handle)
 }
 
-// PATCH is a shortcut for router.Add("PATCH", pattern, handle)
+// Patch is a shortcut for router.Add("PATCH", pattern, handle)
 func (r *Router) Patch(pattern string, handle Handle) {
-	r.Add("PATCH", pattern, handle)
+	r.Handle("PATCH", pattern, handle)
 }
 
-// DELETE is a shortcut for router.Add("DELETE", pattern, handle)
+// Delete is a shortcut for router.Add("DELETE", pattern, handle)
 func (r *Router) Delete(pattern string, handle Handle) {
-	r.Add("DELETE", pattern, handle)
+	r.Handle("DELETE", pattern, handle)
 }
 
-func (r *Router) Add(verb string, pattern string, handler Handle) bool {
+// Handle registers a new request handle with the given path and method.
+//
+// For GET, POST, PUT, PATCH and DELETE requests the respective shortcut
+// functions can be used.
+//
+// This function is intended for bulk loading and to allow the usage of less
+// frequently used, non-standardized or custom methods (e.g. for internal
+// communication with a proxy).
+func (r *Router) Handle(verb string, pattern string, handler Handle) bool {
 	var routeExists bool
 	// word := "UPDATE"
 	// capitalise the word if in lowercase
@@ -98,7 +114,10 @@ func (r *Router) Add(verb string, pattern string, handler Handle) bool {
 		depth:       len(patternInfo),
 	}
 
-	fmt.Println("Adding these paths to the Router | %s | %s | %b", verb, pattern, exists)
+	// Elem := reflect.ValueOf(handler).Type()
+	// fmt.Println(Elem)
+	// fmt.Println("Adding these paths to the Router | %s | %s | %b", verb, pattern, exists)
+
 	// If the route map exists r["GET"], r["POST"]...etc`
 	if exists {
 		// loop thru the list of routes
@@ -112,20 +131,43 @@ func (r *Router) Add(verb string, pattern string, handler Handle) bool {
 		// If has not been added, add it
 		if !routeExists {
 			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
+			// fmt.Println(r.paths[httpVerb])
 		}
+		return true
 	} else {
-		fmt.Println("Zero routes added, must initialise and then add")
+		// fmt.Println("Zero routes added, must initialise and then add")
+		// initialise the path map
 		r.paths = make(map[string][]route)
+		// add the 1st path
 		r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
+		return true
 	}
 	return false
 }
 
-func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(res, "Hello Eugene!") // send data to client side
+// Handler is an adapter which allows the usage of an http.Handler as a
+// request handle.
+func (r *Router) Handler(method string, path string, handler http.Handler) {
+	r.Handle(method, path,
+		func(w http.ResponseWriter, req *http.Request) {
+			handler.ServeHTTP(w, req)
+		},
+	)
+}
+
+// HandlerFunc is an adapter which allows the usage of an http.HandlerFunc as a
+// request handle.
+func (r *Router) HandlerFunc(method string, path string, handler http.HandlerFunc) {
+	r.Handler(method, path, handler)
+}
+
+func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	fmt.Println("A request came in from %s %s", req.Method, req.URL.Path)
+	// h := r.paths[strings.ToUpper(req.Method)]
+	// r.Handler(req.Method, h[0].pattern, h[0].handler)
 }
 
 func (r *Router) Serve() {
 	fmt.Println("Server deployed at 3000")
-	http.ListenAndServe("localhost:3000", nil)
+	http.ListenAndServe(":3000", r)
 }
