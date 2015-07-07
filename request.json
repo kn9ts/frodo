@@ -1,0 +1,40 @@
+{
+    "Method": "GET",
+    "URL": {
+        "Scheme": "",
+        "Opaque": "",
+        "User": null,
+        "Host": "",
+        "Path": "/json",
+        "RawQuery": "",
+        "Fragment": ""
+    },
+    "Proto": "HTTP/1.1",
+    "ProtoMajor": 1,
+    "ProtoMinor": 1,
+    "Header": {
+        "Accept": ["text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"],
+        "Accept-Encoding": ["gzip, deflate, sdch"],
+        "Accept-Language": ["en-US,en;q=0.8,de;q=0.6,sw;q=0.4"],
+        "Connection": ["keep-alive"],
+        "Cookie": ["visited=yes; _jsuid=3194997667; ajs_anonymous_id=%22026e6744-47cc-40d5-9df2-6ea8ab9f2261%22; mp_ebcdcca3aad447bca3c21744819c0365_mixpanel=%7B%22distinct_id%22%3A%20%2214bbffe90686b1-06ff65766-32677c02-fa000-14bbffe9069b5b%22%2C%22%24initial_referrer%22%3A%20%22%24direct%22%2C%22%24initial_referring_domain%22%3A%20%22%24direct%22%7D; ai_user=82CA416F-0A45-4C27-AA2D-89527BFFA1D7|2015-03-21T13:29:21.733Z; ajs_user_id=null; ajs_group_id=null; _ga=GA1.1.1400103185.1424855307; _hp2_id.3250765848=4998398632575462.1934775901.1006734726; __atuvc=0%7C18%2C0%7C19%2C9%7C20%2C104%7C21%2C68%7C22"],
+        "Dnt": ["1"],
+        "User-Agent": ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36"]
+    },
+    "Body": {
+        "Closer": {
+            "Reader": null
+        }
+    },
+    "ContentLength": 0,
+    "TransferEncoding": null,
+    "Close": false,
+    "Host": "localhost:8080",
+    "Form": null,
+    "PostForm": null,
+    "MultipartForm": null,
+    "Trailer": null,
+    "RemoteAddr": "[::1]:54493",
+    "RequestURI": "/json",
+    "TLS": null
+}

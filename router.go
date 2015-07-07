@@ -3,29 +3,28 @@ package frodo
 import (
 	"fmt"
 	"net/http"
+	"regexp"
+	// "regexp/syntax"
 	// "reflect"
 	"strings"
 )
 
-// New global var I will use to launch app
+// New global var is used to launch the app/routing
 var New *Router
 
 // Handle is a function that can be registered to a route to handle HTTP
 // requests. Like http.HandlerFunc, but has a third parameter for the values of
 // wildcards (variables).
-type Handle func(http.ResponseWriter, *http.Request)
+type Handle func(http.ResponseWriter, *http.Request, Params)
 type Handler interface {
 	ServerHTTP(http.ResponseWriter, *http.Request)
 }
 
 type route struct {
-	pattern     string
-	parentRoute string
-	name        string
-	handler     Handle
-	isRegex     interface{}
-	priority    int
-	depth       int
+	pattern string
+	handler Handle
+	isRegex int
+	depth   int
 }
 
 type Param struct {
@@ -40,13 +39,13 @@ type Router struct {
 	paths map[string][]route
 }
 
+// NewRouter return a new pointed Router instance
 func NewRouter() *Router {
 	New = new(Router)
 	return New
 }
 
-// Make sure the Router conforms with the http.Handler interface
-// var _ http.Handler = NewRouter()
+// Application return a new pointed Router instance
 func (r *Router) Application() *Router {
 	New = new(Router)
 	return New
@@ -55,16 +54,6 @@ func (r *Router) Application() *Router {
 // Get is a shortcut for router.Add("GET", pattern, handle)
 func (r *Router) Get(pattern string, handle Handle) {
 	r.Handle("GET", pattern, handle)
-}
-
-// Head is a shortcut for router.Add("HEAD", pattern, handle)
-func (r *Router) Head(pattern string, handle Handle) {
-	r.Handle("HEAD", pattern, handle)
-}
-
-// Options is a shortcut for router.Add("OPTIONS", pattern, handle)
-func (r *Router) Options(pattern string, handle Handle) {
-	r.Handle("OPTIONS", pattern, handle)
 }
 
 // Post is a shortcut for router.Add("POST", pattern, handle)
@@ -87,16 +76,27 @@ func (r *Router) Delete(pattern string, handle Handle) {
 	r.Handle("DELETE", pattern, handle)
 }
 
+// Head is a shortcut for router.Add("HEAD", pattern, handle)
+func (r *Router) Head(pattern string, handle Handle) {
+	r.Handle("HEAD", pattern, handle)
+}
+
+// Options is a shortcut for router.Add("OPTIONS", pattern, handle)
+func (r *Router) Options(pattern string, handle Handle) {
+	r.Handle("OPTIONS", pattern, handle)
+}
+
 // Handle registers a new request handle with the given path and method.
-//
 // For GET, POST, PUT, PATCH and DELETE requests the respective shortcut
 // functions can be used.
-//
-// This function is intended for bulk loading and to allow the usage of less
-// frequently used, non-standardized or custom methods (e.g. for internal
-// communication with a proxy).
-func (r *Router) Handle(verb, pattern string, handler Handle) bool {
+func (r *Router) Handle(verb, pattern string, handler Handle) {
 	var routeExists bool
+
+	// If it is "/" <-- root directory
+	if li := strings.LastIndex(pattern, "/"); li == 0 && (len(pattern)-1) == li {
+		pattern = "/root"
+	}
+
 	// word := "UPDATE"
 	// capitalise the word if in lowercase
 	httpVerb := strings.ToUpper(verb)
@@ -104,23 +104,16 @@ func (r *Router) Handle(verb, pattern string, handler Handle) bool {
 	// The route from the Routes Map
 	_, exists := r.paths[httpVerb]
 
-	var isReg int
-	isReg = strings.IndexAny(pattern, "{}")
-	patternInfo := strings.Split(pattern, "/")
+	isReg := len(regexp.MustCompile(`\{[\w.-]+\}`).FindAllString(pattern, -1))
+	depth := len(strings.Split(pattern[1:], "/"))
 
 	newRoute := route{
-		pattern:     pattern,
-		parentRoute: patternInfo[0],
-		name:        "",
-		handler:     handler,
-		isRegex:     isReg / 2,
-		priority:    0,
-		depth:       len(patternInfo),
+		pattern: pattern,
+		handler: handler,
+		isRegex: isReg / 2,
+		depth:   depth,
 	}
-
-	// Elem := reflect.ValueOf(handler).Type()
-	// fmt.Println(Elem)
-	// fmt.Println("Adding these paths to the Router | %s | %s | %b", verb, pattern, exists)
+	fmt.Printf("Adding this paths to the Router.path[%s] | %v\n", httpVerb, newRoute)
 
 	// If the route map exists r["GET"], r["POST"]...etc`
 	if exists {
@@ -137,23 +130,22 @@ func (r *Router) Handle(verb, pattern string, handler Handle) bool {
 			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
 			// fmt.Println(r.paths[httpVerb])
 		}
-		return true
 	} else {
-		// fmt.Println("Zero routes added, must initialise and then add")
-		// initialise the path map
-		r.paths = make(map[string][]route)
+		// initialise the path map, if nothing had been added
+		if len(r.paths) == 0 {
+			fmt.Println("Zero routes added, must initialise and then add")
+			r.paths = make(map[string][]route)
+		}
 		// add the 1st path
 		r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
-		return true
 	}
-	return false
 }
 
 // Handler is an adapter which allows the usage of an http.Handler as a
 // request handle.
 func (r *Router) Handler(method, path string, handler http.Handler) {
 	r.Handle(method, path,
-		func(w http.ResponseWriter, req *http.Request) {
+		func(w http.ResponseWriter, req *http.Request, p Params) {
 			handler.ServeHTTP(w, req)
 		},
 	)
@@ -166,11 +158,102 @@ func (r *Router) HandlerFunc(method, path string, handler http.HandlerFunc) {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	fmt.Println("A request came in from %s %s", req.Method, req.URL.Path)
-	// h := r.paths[strings.ToUpper(req.Method)]
-	// r.Handler(req.Method, h[0].pattern, h[0].handler)
+	// Get the URL Path
+	requestURL := req.URL.String()
+
+	// If it is "/", root request
+	// Convert to equive the request of "/root"
+	if li := strings.LastIndex(requestURL, "/"); li == 0 && (len(requestURL)-1) == li {
+		requestURL = "/root"
+	}
+
+	// Remove the 1st slash "/", so either have "root/someshit/moreshit"
+	requestedURLParts := strings.Split(requestURL[1:], "/")
+	fmt.Printf("\n ------- A request came in from [%s] %q --------\n\n", req.Method, req.URL.String())
+	fmt.Printf("Requested URL parts -- %q, %d \n", requestedURLParts, len(requestedURLParts))
+	// fmt.Println(requestedURLParts[len(requestedURLParts)-1] == "/root")
+
+	// Get the method related with the request in  a []routes array
+	// The list of routes related with the method of the requested path
+	RelatedRoutes := r.paths[strings.ToUpper(req.Method)]
+	fmt.Printf("PATH ROUTES: %v \n", RelatedRoutes)
+
+	// Now loop thru all the routes provided in that Method
+	for _, route := range RelatedRoutes {
+		// By default on start it is FALSE
+		MATCH_FOUND := false
+
+		// Split and compare the depth of the route requested
+		patternSplit := strings.Split(route.pattern[1:], "/")
+		fmt.Printf("Request comparisons: %q <<>> %q \n", patternSplit, requestedURLParts)
+
+		//  If the depth match, then they might be a possible match
+		if route.depth == len(requestedURLParts) {
+
+			MATCH_FOUND = true
+			// var HandleToExecute Handle
+
+			// Try get all the param fields
+			reg := regexp.MustCompile(`\{[\w.-]+\}`)
+			paramsCollectable := reg.FindAllString(route.pattern, -1)
+
+			// Collect the params in the slice knowing
+			// the number of params to expect
+			requestParams := make([]Param, len(paramsCollectable))
+
+			// If a possible match was acquired, step 2:
+			// loop thru each part matching them, if one fails then it's a no match
+			for index, portion := range requestedURLParts {
+				// check to see pattern is something like {param}
+				isPattern, _ := regexp.MatchString(`\{[\w.-]{2,}\}`, patternSplit[index])
+
+				// if route part value is actually a regex to match e.g {param}
+				if isPattern {
+					fmt.Printf("Trying to match the pattern: %q <<>> part: %q", patternSplit[index], portion)
+
+					// Does it pass the {param} match, remove curly brackets
+					itMatchesRegexParam, _ := regexp.MatchString(`[\w.-]{2,}`, portion)
+
+					// If it does pass the match test
+					if itMatchesRegexParam {
+						// Replace all curly brackets with nothing to get the key value
+						key := regexp.MustCompile(`(\{|\})`).ReplaceAllString(patternSplit[index], "")
+						// Add it to the parameters
+						if key != "" {
+							requestParams = append(requestParams, Param{
+								key:   key,
+								value: portion,
+							})
+						}
+						MATCH_FOUND = true
+					}
+
+				} else {
+					// if there is no regex match,
+					// try match them side by side
+					if patternSplit[index] != portion {
+						MATCH_FOUND = false
+						// If no match here, break the search nothing found
+						fmt.Printf("\n-------- BREAK: No match found at all. ---------\n\n")
+						break
+					}
+				}
+			}
+
+			// After checking the portions if MATCH_FOUND remains true,
+			// Then all the portions matched, thus this handler suffices
+			// the match thus run it
+			if MATCH_FOUND {
+				fmt.Printf("\nParams found: %q\n", requestParams)
+				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
+				route.handler(w, req, requestParams)
+				break
+			}
+		}
+	}
 }
 
+// Run Deploys the application to the route given
 func (r *Router) Run() {
 	fmt.Println("Server deployed at 3000")
 	http.ListenAndServe(":3000", r)
