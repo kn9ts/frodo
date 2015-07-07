@@ -27,11 +27,17 @@ type route struct {
 	depth   int
 }
 
-type Param struct {
-	key   string
-	value interface{}
+type Params map[string]string
+
+// Get returns the value of the first Param which key matches the given name.
+// If no matching Param is found, an empty string is returned.
+func (ps Params) Get(name string) string {
+	value, ok := ps[name]
+	if ok {
+		return value
+	}
+	return ""
 }
-type Params []Param
 
 // Router is a http.Handler which can be used to dispatch requests to different
 // handler functions via configurable routes
@@ -194,12 +200,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			// var HandleToExecute Handle
 
 			// Try get all the param fields
-			reg := regexp.MustCompile(`\{[\w.-]+\}`)
-			paramsCollectable := reg.FindAllString(route.pattern, -1)
+			// reg := regexp.MustCompile(`\{[\w.-]+\}`)
+			// paramsCollectable := reg.FindAllString(route.pattern, -1)
 
 			// Collect the params in the slice knowing
 			// the number of params to expect
-			requestParams := make([]Param, len(paramsCollectable))
+			requestParams := make(Params)
 
 			// If a possible match was acquired, step 2:
 			// loop thru each part matching them, if one fails then it's a no match
@@ -220,10 +226,11 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						key := regexp.MustCompile(`(\{|\})`).ReplaceAllString(patternSplit[index], "")
 						// Add it to the parameters
 						if key != "" {
-							requestParams = append(requestParams, Param{
-								key:   key,
-								value: portion,
-							})
+							requestParams[key] = portion
+							// requestParams = append(requestParams, Param{
+							// 	key:   key,
+							// 	value: portion,
+							// })
 						}
 						MATCH_FOUND = true
 					}

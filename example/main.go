@@ -10,8 +10,8 @@ func main() {
 		w.Write([]byte("Welcome, to the ROOT route")) // send data to client side
 	})
 
-	App.Get("/page/{id}", func(w http.ResponseWriter, r *http.Request, _ frodo.Params) {
-		w.Write([]byte("Hello page with ID!")) // send data to client side
+	App.Get("/page/{id}", func(w http.ResponseWriter, r *http.Request, params frodo.Params) {
+		w.Write([]byte("Hello page, the ID passed is " + params.Get("id"))) // send data to client side
 	})
 
 	App.Post("/{name}", func(w http.ResponseWriter, r *http.Request, _ frodo.Params) {
