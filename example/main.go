@@ -1,25 +1,25 @@
 package main
 
-import "github.com/kn9ts/frodo"
+import "../../frodo"
 import "net/http"
 
 func main() {
-	App := frodo.New.Application()
+	App := Frodo.New.Application()
 	// Now create your routes
-	App.Get("/", func(w http.ResponseWriter, r *http.Request, _ frodo.Params) {
+	App.Get("/", func(w http.ResponseWriter, r *http.Request, _ Frodo.Params) {
 		w.Write([]byte("Welcome, to the ROOT route")) // send data to client side
 	})
 
-	App.Get("/page/{id}", func(w http.ResponseWriter, r *http.Request, params frodo.Params) {
-		w.Write([]byte("Hello page, the ID passed is " + params.Get("id"))) // send data to client side
+	App.Get("/page/{id}", func(w http.ResponseWriter, r *http.Request, params Frodo.Params) {
+		w.Write([]byte("Hello page here, the ID passed is " + params.Get("id"))) // send data to client side
 	})
 
-	App.Post("/{name}", func(w http.ResponseWriter, r *http.Request, _ frodo.Params) {
-		w.Write([]byte("Hello nested page that accepts names as param!")) // send data to client side
+	App.Post("/{some_id}/{images}", func(w http.ResponseWriter, r *http.Request, input Frodo.Params) {
+		w.Write([]byte("Hello, to get here. You required this ID: " + input.Get("some_id"))) // send data to client side
 	})
 
-	App.Post("/page", func(w http.ResponseWriter, r *http.Request, _ frodo.Params) {
-		w.Write([]byte("Hello nested page called page!")) // send data to client side
+	App.Post("/{name}", func(w http.ResponseWriter, r *http.Request, input Frodo.Params) {
+		w.Write([]byte("Hello, " + input.Get("name") + "! This is your profile page.")) // send data to client side
 	})
 	App.Run()
 }

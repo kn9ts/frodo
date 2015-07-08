@@ -1,4 +1,4 @@
-package frodo
+package Frodo
 
 import (
 	"fmt"
@@ -16,6 +16,8 @@ var New *Router
 // requests. Like http.HandlerFunc, but has a third parameter for the values of
 // wildcards (variables).
 type Handle func(http.ResponseWriter, *http.Request, Params)
+
+// Handler interface gives my router the control of taking in/over HTTP requests
 type Handler interface {
 	ServerHTTP(http.ResponseWriter, *http.Request)
 }
@@ -27,6 +29,7 @@ type route struct {
 	depth   int
 }
 
+// Params is passed all routing/url parameters
 type Params map[string]string
 
 // Get returns the value of the first Param which key matches the given name.
@@ -110,7 +113,8 @@ func (r *Router) Handle(verb, pattern string, handler Handle) {
 	// The route from the Routes Map
 	_, exists := r.paths[httpVerb]
 
-	isReg := len(regexp.MustCompile(`\{[\w.-]+\}`).FindAllString(pattern, -1))
+	// check to see if it is a regex pattern given from dev
+	isReg := len(regexp.MustCompile(`\{[\w.-]{2,}\}`).FindAllString(pattern, -1))
 	depth := len(strings.Split(pattern[1:], "/"))
 
 	newRoute := route{
@@ -187,7 +191,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// Now loop thru all the routes provided in that Method
 	for _, route := range RelatedRoutes {
 		// By default on start it is FALSE
-		MATCH_FOUND := false
+		aPossibleRouteMatchFound := false
 
 		// Split and compare the depth of the route requested
 		patternSplit := strings.Split(route.pattern[1:], "/")
@@ -196,12 +200,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		//  If the depth match, then they might be a possible match
 		if route.depth == len(requestedURLParts) {
 
-			MATCH_FOUND = true
-			// var HandleToExecute Handle
-
-			// Try get all the param fields
-			// reg := regexp.MustCompile(`\{[\w.-]+\}`)
-			// paramsCollectable := reg.FindAllString(route.pattern, -1)
+			aPossibleRouteMatchFound = true
 
 			// Collect the params in the slice knowing
 			// the number of params to expect
@@ -227,19 +226,15 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						// Add it to the parameters
 						if key != "" {
 							requestParams[key] = portion
-							// requestParams = append(requestParams, Param{
-							// 	key:   key,
-							// 	value: portion,
-							// })
 						}
-						MATCH_FOUND = true
+						aPossibleRouteMatchFound = true
 					}
 
 				} else {
 					// if there is no regex match,
 					// try match them side by side
 					if patternSplit[index] != portion {
-						MATCH_FOUND = false
+						aPossibleRouteMatchFound = false
 						// If no match here, break the search nothing found
 						fmt.Printf("\n-------- BREAK: No match found at all. ---------\n\n")
 						break
@@ -247,10 +242,10 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				}
 			}
 
-			// After checking the portions if MATCH_FOUND remains true,
+			// After checking the portions if aPossibleRouteMatchFound remains true,
 			// Then all the portions matched, thus this handler suffices
 			// the match thus run it
-			if MATCH_FOUND {
+			if aPossibleRouteMatchFound {
 				fmt.Printf("\nParams found: %q\n", requestParams)
 				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
 				route.handler(w, req, requestParams)
