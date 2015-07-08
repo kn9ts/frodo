@@ -174,8 +174,15 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// If it is "/", root request
 	// Convert to equive the request of "/root"
-	if li := strings.LastIndex(requestURL, "/"); li == 0 && (len(requestURL)-1) == li {
+	li := strings.LastIndex(requestURL, "/")
+	if li == 0 && (len(requestURL)-1) == li {
 		requestURL = "/root"
+	}
+
+	// Remove the last trailing slash in User's request
+	// E.G /user/eugene/
+	if li == len(requestURL)-1 {
+		requestURL = requestURL[:len(requestURL)-1]
 	}
 
 	// Remove the 1st slash "/", so either have "root/someshit/moreshit"
