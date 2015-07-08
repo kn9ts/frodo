@@ -6,6 +6,7 @@ import (
 	"regexp"
 	// "regexp/syntax"
 	// "reflect"
+	"strconv"
 	"strings"
 )
 
@@ -256,7 +257,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 // Run Deploys the application to the route given
-func (r *Router) Run() {
-	fmt.Println("Server deployed at 3000")
-	http.ListenAndServe(":3000", r)
+func (r *Router) Run(portNumber int) {
+	if portNumber == 0 {
+		portNumber = 3000
+	}
+
+	portNumberString := strconv.Itoa(portNumber)
+	fmt.Println("Server deployed at: " + portNumberString)
+	http.ListenAndServe(":"+portNumberString, r)
 }
