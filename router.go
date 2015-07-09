@@ -18,11 +18,6 @@ var New *Router
 // wildcards (variables).
 type Handle func(http.ResponseWriter, *http.Request, Params)
 
-// Handler interface gives my router the control of taking in/over HTTP requests
-type Handler interface {
-	ServerHTTP(http.ResponseWriter, *http.Request)
-}
-
 type route struct {
 	pattern string
 	handler Handle
@@ -179,7 +174,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		requestURL = "/root"
 	}
 
-	// Remove the last trailing slash in User's request
+	// Remove the last trailing slash in user's request
 	// E.G /user/eugene/
 	if li == len(requestURL)-1 {
 		requestURL = requestURL[:len(requestURL)-1]
@@ -264,12 +259,14 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 // Run Deploys the application to the route given
-func (r *Router) Run(portNumber int) {
+func (r *Router) Run(portNumber interface{}) {
+	// Converting an interface into the data type it should be
+	portNumber = portNumber.(int)
 	if portNumber == 0 {
 		portNumber = 3000
 	}
 
-	portNumberString := strconv.Itoa(portNumber)
+	portNumberString := strconv.Itoa(portNumber.(int))
 	fmt.Println("Server deployed at: " + portNumberString)
 	http.ListenAndServe(":"+portNumberString, r)
 }
