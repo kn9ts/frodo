@@ -26,5 +26,7 @@ func main() {
 		// w.Write([]byte("Hello, " + param.Get("name") + "! This is your profile page.")) // send data to client side
 		Reponse.JSON(w, http.StatusOK, r)
 	})
-	App.Run(3000)
+
+	App.Serve()
+	// App.ServeOnPort(3000)
 }
