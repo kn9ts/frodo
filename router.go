@@ -13,8 +13,6 @@ import (
 // New global var is used to launch the app/routing
 var New *Router
 
-// var app *Middleware
-
 // Handle is a function that can be registered to a route to handle HTTP
 // requests. Like http.HandlerFunc, but has a third parameter for the values of
 // wildcards (variables).
@@ -27,30 +25,11 @@ type route struct {
 	depth   int
 }
 
-// Params is passed all routing/url parameters
-type Params map[string]string
-
-// Get returns the value of the first Param which key matches the given name.
-// If no matching Param is found, an empty string is returned.
-func (ps Params) Get(name string) string {
-	value, ok := ps[name]
-	if ok {
-		return value
-	}
-	return ""
-}
-
 // Router is a http.Handler which can be used to dispatch requests to different
 // handler functions via configurable routes
 type Router struct {
 	paths map[string][]route
 	Middleware
-}
-
-// NewRouter return a new pointed Router instance
-func NewRouter() *Router {
-	New = new(Router)
-	return New
 }
 
 // Application return a new pointed Router instance
@@ -161,7 +140,7 @@ func (r *Router) Handler(method, path string, handler http.Handler) {
 }
 
 // HandlerFunc is an adapter which allows the usage of an http.HandlerFunc as a
-// request handle.
+// request handle. Stolen idea from 'httprouter'
 func (r *Router) HandlerFunc(method, path string, handler http.HandlerFunc) {
 	r.Handler(method, path, handler)
 }
@@ -249,16 +228,53 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			}
 
 			// After checking the portions if aPossibleRouteMatchFound remains true,
-			// Then all the portions matched, thus this handler suffices
+			// then all the portions matched, thus this handler suffices
 			// the match thus run it
 			if aPossibleRouteMatchFound {
 				fmt.Printf("\nParams found: %q\n", requestParams)
 
+				// Wrap the supplied ResponseWriter
+				MiddlewareWriter := &MiddlewareResponseWriter{
+					ResponseWriter: w,
+				}
+
+				// Get Application "before" Middleware and run them
 				if len(r.BeforeMiddleware) > 0 {
 					for ix, beforeFilter := range r.BeforeMiddleware {
-						beforeFilter(w, req, requestParams)
-						fmt.Printf("\nBEFORE Middleware No. %d running, REQ: %s \n", ix, req.Method)
+						// Pass it as the ResponseWriter instead
+						beforeFilter(MiddlewareWriter, req, requestParams)
+						fmt.Printf("\nBEFORE Middleware No. %d running: Written - %s | Request: - %v \n", ix, req.Method, MiddlewareWriter.written)
+
+						// If there was a write, stop processing
+						if MiddlewareWriter.written {
+							fmt.Printf("\nEXITING: A write was made by Middleware No. %d | %s \n", ix, req.Method)
+							// End the connection
+							return
+						}
 					}
+				} else {
+					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
+				}
+
+				// If there is a middleware that should be implemented to
+				// the route, it happens here, before the main dev's handler's
+				if len(r.FilterMiddleware) > 0 {
+					for _, routeFilter := range r.FilterMiddleware {
+						// Try find any route filters that match the route pattern that exist and run them
+						if routeFilter.Name == route.pattern {
+							routeFilter.Handle(MiddlewareWriter, req, requestParams)
+							fmt.Printf("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, MiddlewareWriter.written)
+							// If there was a write, stop processing
+							if MiddlewareWriter.written {
+								fmt.Printf("\nEXITING: A write was made by Middleware Name. %d | %s \n", routeFilter.Name, req.Method)
+								// End the connection
+								return
+							}
+							// a match was found, break out
+							break
+						}
+					}
+
 				} else {
 					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
 				}
@@ -291,7 +307,7 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 
 // AddFilters add Middlewares to routes, requests and responses
 func (r *Router) AddFilters(m *Middleware) {
-	fmt.Println("Middleware added %q", m.BeforeMiddleware)
+	fmt.Printf("\nMiddleware added %q\n", m.BeforeMiddleware)
 	r.Middleware.BeforeMiddleware = m.BeforeMiddleware
 	r.Middleware.AfterMiddleware = m.AfterMiddleware
 	r.Middleware.FilterMiddleware = m.FilterMiddleware
