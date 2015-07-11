@@ -90,9 +90,7 @@ func (r *Router) Match(httpVerbs Methods, pattern string, handle Handle) {
 // All method adds the Handle to all Methods/HTTPVerbs for a given route
 func (r *Router) All(pattern string, handle Handle) {
 	methods := Methods{"GET", "POST", "PATCH", "PUT", "DELETE"}
-	for _, verb := range methods {
-		r.Handle(strings.ToUpper(verb), pattern, handle)
-	}
+	r.Match(methods, pattern, handle)
 }
 
 // Handle registers a new request handle with the given path and method.
