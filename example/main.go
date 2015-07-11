@@ -32,7 +32,10 @@ func main() {
 	})
 
 	App.Match(Frodo.Methods{"GET", "POST"}, "/home", func(w http.ResponseWriter, r *http.Request, _ Frodo.Params) {
-		// w.Write([]byte("Hello, " + param.Get("name") + "! This is your profile page.")) // send data to client side
+		Reponse.JSON(w, http.StatusOK, r)
+	})
+
+	App.All("/home", func(w http.ResponseWriter, r *http.Request, _ Frodo.Params) {
 		Reponse.JSON(w, http.StatusOK, r)
 	})
 

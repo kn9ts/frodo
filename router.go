@@ -77,13 +77,21 @@ func (r *Router) Options(pattern string, handle Handle) {
 	r.Handle("OPTIONS", pattern, handle)
 }
 
-// Match adds several Handles for the provided Methods/HTTPVerbs for a given route
+// Match adds the Handle to the provided Methods/HTTPVerbs for a given route
 // EG. GET/POST from /home to have the same Handle
 func (r *Router) Match(httpVerbs Methods, pattern string, handle Handle) {
 	if len(httpVerbs) > 0 {
 		for _, verb := range httpVerbs {
 			r.Handle(strings.ToUpper(verb), pattern, handle)
 		}
+	}
+}
+
+// All method adds the Handle to all Methods/HTTPVerbs for a given route
+func (r *Router) All(pattern string, handle Handle) {
+	methods := Methods{"GET", "POST", "PATCH", "PUT", "DELETE"}
+	for _, verb := range methods {
+		r.Handle(strings.ToUpper(verb), pattern, handle)
 	}
 }
 
