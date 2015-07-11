@@ -1,6 +1,7 @@
 package Frodo
 
-// Params is passed all routing/url parameters
+// Params type will carry all the values in curly {} brackets that are
+// translated from url param values to ready to be used values
 type Params map[string]string
 
 // Get returns the value of the first Param which key matches the given name.
