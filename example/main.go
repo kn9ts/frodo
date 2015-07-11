@@ -1,12 +1,16 @@
 package main
 
-import "github.com/kn9ts/frodo"
-import "net/http"
-import "gopkg.in/unrolled/render.v1"
+import (
+	"github.com/kn9ts/frodo"
+	"github.com/kn9ts/frodo/example/filters"
+	"gopkg.in/unrolled/render.v1"
+	"net/http"
+)
 
 func main() {
 	// Get an app instance by initializing the app
 	App := Frodo.New.Application()
+	App.AddFilters(filters.MiddleWare)
 	Reponse := render.New(render.Options{})
 
 	// Now create your routes
