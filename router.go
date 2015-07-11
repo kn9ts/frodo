@@ -13,6 +13,8 @@ import (
 // New global var is used to launch the app/routing
 var New *Router
 
+// var app *Middleware
+
 // Handle is a function that can be registered to a route to handle HTTP
 // requests. Like http.HandlerFunc, but has a third parameter for the values of
 // wildcards (variables).
@@ -42,6 +44,7 @@ func (ps Params) Get(name string) string {
 // handler functions via configurable routes
 type Router struct {
 	paths map[string][]route
+	Middleware
 }
 
 // NewRouter return a new pointed Router instance
@@ -250,8 +253,18 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			// the match thus run it
 			if aPossibleRouteMatchFound {
 				fmt.Printf("\nParams found: %q\n", requestParams)
-				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
+
+				if len(r.BeforeMiddleware) > 0 {
+					for ix, beforeFilter := range r.BeforeMiddleware {
+						beforeFilter(w, req, requestParams)
+						fmt.Printf("\nBEFORE Middleware No. %d running, REQ: %s \n", ix, req.Method)
+					}
+				} else {
+					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
+				}
+
 				route.handler(w, req, requestParams)
+				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
 				break
 			}
 		}
@@ -274,4 +287,12 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 	portNumberString := strconv.Itoa(portNumber.(int))
 	fmt.Println("Server deployed at: " + portNumberString)
 	http.ListenAndServe(":"+portNumberString, r)
+}
+
+// AddFilters add Middlewares to routes, requests and responses
+func (r *Router) AddFilters(m *Middleware) {
+	fmt.Println("Middleware added %q", m.BeforeMiddleware)
+	r.Middleware.BeforeMiddleware = m.BeforeMiddleware
+	r.Middleware.AfterMiddleware = m.AfterMiddleware
+	r.Middleware.FilterMiddleware = m.FilterMiddleware
 }
