@@ -26,7 +26,12 @@ func main() {
 		w.Write([]byte("Hello, to get here. You required this ID: " + param.Get("some_id"))) // send data to client side
 	})
 
-	App.Post("/{name}", func(w http.ResponseWriter, r *http.Request, param Frodo.Params) {
+	App.Post("/{name}", func(w http.ResponseWriter, r *http.Request, _ Frodo.Params) {
+		// w.Write([]byte("Hello, " + param.Get("name") + "! This is your profile page.")) // send data to client side
+		Reponse.JSON(w, http.StatusOK, r)
+	})
+
+	App.Match(Frodo.Methods{"GET", "POST"}, "/home", func(w http.ResponseWriter, r *http.Request, _ Frodo.Params) {
 		// w.Write([]byte("Hello, " + param.Get("name") + "! This is your profile page.")) // send data to client side
 		Reponse.JSON(w, http.StatusOK, r)
 	})
