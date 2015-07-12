@@ -16,7 +16,7 @@ var New *Router
 // Handle is a function that can be registered to a route to handle HTTP
 // requests. Like http.HandlerFunc, but has a third parameter for the values of
 // wildcards (variables).
-type Handle func(http.ResponseWriter, *http.Request, Params)
+type Handle func(http.ResponseWriter, *http.Request, *Params)
 
 type route struct {
 	pattern string
@@ -89,7 +89,7 @@ func (r *Router) Match(httpVerbs Methods, pattern string, handle Handle) {
 
 // All method adds the Handle to all Methods/HTTPVerbs for a given route
 func (r *Router) All(pattern string, handle Handle) {
-	methods := Methods{"GET", "POST", "PATCH", "PUT", "DELETE"}
+	methods := Methods{"GET", "POST", "PUT", "DELETE", "PATCH"}
 	r.Match(methods, pattern, handle)
 }
 
@@ -153,7 +153,7 @@ func (r *Router) Handle(verb, pattern string, handler Handle) {
 // request handle.
 func (r *Router) Handler(method, path string, handler http.Handler) {
 	r.Handle(method, path,
-		func(w http.ResponseWriter, req *http.Request, p Params) {
+		func(w http.ResponseWriter, req *http.Request, p *Params) {
 			handler.ServeHTTP(w, req)
 		},
 	)
@@ -212,7 +212,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			aPossibleRouteMatchFound = true
 
 			// Collect the params in the Params array
-			requestParams := make(Params)
+			requestParams := new(Params)
 
 			// If a possible match was acquired, step 2:
 			// loop thru each part of the route pattern matching them, if one fails then it's a no match
@@ -233,8 +233,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						// Replace all curly brackets with nothing to get the key value
 						key := regexp.MustCompile(`(\{|\})`).ReplaceAllString(patternSplit[index], "")
 						// Add it to the parameters
+						if requestParams.params == nil {
+							requestParams.params = make(map[string]string)
+						}
+
 						if key != "" {
-							requestParams[key] = portion
+							requestParams.params[key] = portion
 						}
 						// Keep it true
 						aPossibleRouteMatchFound = true
