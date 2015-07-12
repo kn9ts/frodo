@@ -307,7 +307,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
 				}
 
-				// Finally run the dev's controller provided, and exit (for now, after middleware should come through)
+				// Finally run the dev's controller provided,
+				// and exit (for now, after middleware should come through)
 				route.handler(MiddlewareWriter, req, requestParams)
 				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
 				break
@@ -316,12 +317,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// Serve Deploys the application to the route given
+// Serve deploys the application to the defualt port:3000
 func (r *Router) Serve() {
 	http.ListenAndServe(":3000", r)
 }
 
-// ServeOnPort is to used if you change the port that you plan on serving on
+// ServeOnPort is to used if you prefer serving the application on a different port
 func (r *Router) ServeOnPort(portNumber interface{}) {
 	// Converting an interface into the data type it should be
 	portNumber = portNumber.(int)
@@ -329,15 +330,16 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 		portNumber = 3000
 	}
 
+	// Convert the port, an int into a string
 	portNumberString := strconv.Itoa(portNumber.(int))
-	fmt.Println("Server deployed at: " + portNumberString)
 	http.ListenAndServe(":"+portNumberString, r)
+	fmt.Println("Server deployed at: " + portNumberString)
 }
 
 // AddFilters add Middlewares to routes, requests and responses
 func (r *Router) AddFilters(m *Middleware) {
-	fmt.Printf("\nMiddleware added %q\n", m.BeforeMiddleware)
 	r.Middleware.BeforeMiddleware = m.BeforeMiddleware
 	r.Middleware.AfterMiddleware = m.AfterMiddleware
 	r.Middleware.FilterMiddleware = m.FilterMiddleware
+	// fmt.Printf("\nMiddleware added %q\n", m.BeforeMiddleware)
 }
