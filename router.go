@@ -104,11 +104,11 @@ func (r *Router) Handle(verb, pattern string, handler Handle) {
 		pattern = "/root"
 	}
 
-	// word := "UPDATE"
-	// capitalise the word if in lowercase
+	// word := "GET", "POST", "UPDATE"
+	// capitalise the word if it is in lowercase
 	httpVerb := strings.ToUpper(verb)
 
-	// The route from the Routes Map
+	// Check to see if there is a Routes Map Array for the given HTTP Verb
 	_, exists := r.paths[httpVerb]
 
 	// check to see if it is a regex pattern given from dev
@@ -121,19 +121,19 @@ func (r *Router) Handle(verb, pattern string, handler Handle) {
 		isRegex: isReg / 2,
 		depth:   depth,
 	}
-	fmt.Printf("Adding this paths to the Router.path[%s] | %v\n", httpVerb, newRoute)
+	fmt.Printf("Adding this path to the Router.path[%s] :: %v\n", httpVerb, newRoute)
 
 	// If the route map exists r["GET"], r["POST"]...etc`
 	if exists {
-		// loop thru the list of routes
+		// loop thru the list of existing routes
 		for _, rt := range r.paths[httpVerb] {
-			// check to see if the route was added before
+			// check to see if the route already exists
 			if rt.pattern == pattern {
 				routeExists = true
 			}
 		}
 
-		// If has not been added, add it
+		// If it has not been added, add it
 		if !routeExists {
 			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
 			// fmt.Println(r.paths[httpVerb])
@@ -165,35 +165,39 @@ func (r *Router) HandlerFunc(method, path string, handler http.HandlerFunc) {
 	r.Handler(method, path, handler)
 }
 
+// ServeHTTP will receive all requests, and process them for our router
+// By using it we are implementing the http.Handler and thus can use our own ways to
+// handle incoming requests and process them
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// Get the URL Path
 	requestURL := req.URL.String()
 
 	// If it is "/", root request
-	// Convert to equive the request of "/root"
+	// Convert it to equive the request of "/root"
 	li := strings.LastIndex(requestURL, "/")
 	if li == 0 && (len(requestURL)-1) == li {
 		requestURL = "/root"
 	}
 
 	// Remove the last trailing slash in user's request
-	// E.G /user/eugene/
+	// E.G http://localhost:3000/user/eugene/
 	if li == len(requestURL)-1 {
 		requestURL = requestURL[:len(requestURL)-1]
 	}
 
 	// Remove the 1st slash "/", so either have "root/someshit/moreshit"
+	// This helps it matched the stored route paths
 	requestedURLParts := strings.Split(requestURL[1:], "/")
 	fmt.Printf("\n ------- A request came in from [%s] %q --------\n\n", req.Method, req.URL.String())
 	fmt.Printf("Requested URL parts -- %q, %d \n", requestedURLParts, len(requestedURLParts))
 	// fmt.Println(requestedURLParts[len(requestedURLParts)-1] == "/root")
 
-	// Get the method related with the request in  a []routes array
-	// The list of routes related with the method of the requested path
+	// Get list of routes related with the method of the requested path
+	// returns a []route array
 	RelatedRoutes := r.paths[strings.ToUpper(req.Method)]
-	fmt.Printf("PATH ROUTES: %v \n", RelatedRoutes)
+	// fmt.Printf("PATH ROUTES: %v \n", RelatedRoutes)
 
-	// Now loop thru all the routes provided in that Method
+	// Now loop through all the routes provided in that Method
 	for _, route := range RelatedRoutes {
 		// By default on start it is FALSE
 		aPossibleRouteMatchFound := false
@@ -204,43 +208,44 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 		//  If the depth match, then they might be a possible match
 		if route.depth == len(requestedURLParts) {
-
+			// For now it seems it is true
 			aPossibleRouteMatchFound = true
 
-			// Collect the params in the slice knowing
-			// the number of params to expect
+			// Collect the params in the Params array
 			requestParams := make(Params)
 
 			// If a possible match was acquired, step 2:
-			// loop thru each part matching them, if one fails then it's a no match
+			// loop thru each part of the route pattern matching them, if one fails then it's a no match
+			// each part is seperated with "/"
 			for index, portion := range requestedURLParts {
-				// check to see pattern is something like {param}
+				// check to see route part is a pattern eg. {param}
 				isPattern, _ := regexp.MatchString(`\{[\w.-]{2,}\}`, patternSplit[index])
 
-				// if route part value is actually a regex to match e.g {param}
+				// if the route part value is actually a regex to match
 				if isPattern {
-					fmt.Printf("Trying to match the pattern: %q <<>> part: %q", patternSplit[index], portion)
+					fmt.Printf("Trying to match the pattern: %q <-|-> part: %q", patternSplit[index], portion)
 
 					// Does it pass the {param} match, remove curly brackets
-					itMatchesRegexParam, _ := regexp.MatchString(`[\w.-]{2,}`, portion)
+					routePartMatchesRegexParam, _ := regexp.MatchString(`[\w.-]{2,}`, portion)
 
 					// If it does pass the match test
-					if itMatchesRegexParam {
+					if routePartMatchesRegexParam {
 						// Replace all curly brackets with nothing to get the key value
 						key := regexp.MustCompile(`(\{|\})`).ReplaceAllString(patternSplit[index], "")
 						// Add it to the parameters
 						if key != "" {
 							requestParams[key] = portion
 						}
+						// Keep it true
 						aPossibleRouteMatchFound = true
 					}
 
 				} else {
-					// if there is no regex match,
-					// try match them side by side
+					// if there is no regex match, try match them side by side as strings
+					// If no match was found, then we are wasting time
 					if patternSplit[index] != portion {
+						// If no match here, falsify & break the search nothing found
 						aPossibleRouteMatchFound = false
-						// If no match here, break the search nothing found
 						fmt.Printf("\n-------- BREAK: No match found at all. ---------\n\n")
 						break
 					}
@@ -248,17 +253,18 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			}
 
 			// After checking the portions if aPossibleRouteMatchFound remains true,
-			// then all the portions matched, thus this handler suffices
-			// the match thus run it
+			// then all the portions matched, thus this route suffices the match
+			// thus grab it's handler and run it
 			if aPossibleRouteMatchFound {
 				fmt.Printf("\nParams found: %q\n", requestParams)
 
-				// Wrap the supplied ResponseWriter
+				// Wrap the supplied http.ResponseWriter, we want to know when
+				// a write has been done by the middleware or controller and exit immediately
 				MiddlewareWriter := &MiddlewareResponseWriter{
 					ResponseWriter: w,
 				}
 
-				// Get Application "before" Middleware and run them
+				// Get Application's "Before" Middleware and run them
 				if len(r.BeforeMiddleware) > 0 {
 					for ix, beforeFilter := range r.BeforeMiddleware {
 						// Pass it as the ResponseWriter instead
@@ -273,14 +279,16 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						}
 					}
 				} else {
+					// No before middleware added
 					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
 				}
 
-				// If there is a middleware that should be implemented to
-				// the route, it happens here, before the main dev's handler's
+				// If there is a middleware that should be implemented to the route
+				// Run it before the controller, before the controller provided by the dev
 				if len(r.FilterMiddleware) > 0 {
+					// loop thru the filters to find it
 					for _, routeFilter := range r.FilterMiddleware {
-						// Try find any route filters that match the route pattern that exist and run them
+						// Try find any route filter that matches the route pattern and run them
 						if routeFilter.Name == route.pattern {
 							routeFilter.Handle(MiddlewareWriter, req, requestParams)
 							fmt.Printf("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, MiddlewareWriter.written)
@@ -299,7 +307,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
 				}
 
-				route.handler(w, req, requestParams)
+				// Finally run the dev's controller provided, and exit (for now, after middleware should come through)
+				route.handler(MiddlewareWriter, req, requestParams)
 				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
 				break
 			}
