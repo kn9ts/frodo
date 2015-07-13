@@ -40,7 +40,7 @@
             "submit": ["Submit"]
         },
         "File": {
-            "multiplefiles": [{
+            "uploadfiles": [{
                 "Filename": "middleware.png",
                 "Header": {
                     "Content-Disposition": ["form-data; name=\"multiplefiles\"; filename=\"middleware.png\""],

@@ -16,27 +16,43 @@
         "Accept": ["text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"],
         "Accept-Encoding": ["gzip, deflate"],
         "Accept-Language": ["en-US,en;q=0.8,de;q=0.6,sw;q=0.4"],
-        "Cache-Control": ["no-cache"],
+        "Cache-Control": ["max-age=0"],
         "Connection": ["keep-alive"],
-        "Content-Length": ["122883"],
-        "Content-Type": ["multipart/form-data; boundary=----WebKitFormBoundaryYrmYpcZqNRipYHAd"],
+        "Content-Length": ["304599"],
+        "Content-Type": ["multipart/form-data; boundary=----WebKitFormBoundarypujW24qVJP1ZcT41"],
         "Cookie": ["_ga=GA1.4.1581308941.1425994740"],
         "Dnt": ["1"],
         "Origin": ["http://localhost:9090"],
-        "Pragma": ["no-cache"],
-        "Referer": ["http://localhost:9090/login"],
+        "Referer": ["http://localhost:9090/"],
         "User-Agent": ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36"]
     },
     "Body": {},
-    "ContentLength": 122883,
+    "ContentLength": 304599,
     "TransferEncoding": null,
     "Close": false,
     "Host": "127.0.0.1:9090",
-    "Form": null,
-    "PostForm": null,
-    "MultipartForm": null,
+    "Form": {
+        "submit": ["upload"],
+        "token": ["a406df3e0954d6fbf3e5e566b3c62158"]
+    },
+    "PostForm": {},
+    "MultipartForm": {
+        "Value": {
+            "submit": ["upload"],
+            "token": ["a406df3e0954d6fbf3e5e566b3c62158"]
+        },
+        "File": {
+            "uploadfile": [{
+                "Filename": "materializw.png",
+                "Header": {
+                    "Content-Disposition": ["form-data; name=\"uploadfile\"; filename=\"materializw.png\""],
+                    "Content-Type": ["image/png"]
+                }
+            }]
+        }
+    },
     "Trailer": null,
-    "RemoteAddr": "127.0.0.1:61773",
+    "RemoteAddr": "127.0.0.1:60961",
     "RequestURI": "/upload",
     "TLS": null
 }

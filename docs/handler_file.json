@@ -1,0 +1,7 @@
+{
+    "Filename": "middleware.png",
+    "Header": {
+        "Content-Disposition": ["form-data; name=\"uploadfile\"; filename=\"middleware.png\""],
+        "Content-Type": ["image/png"]
+    }
+}
