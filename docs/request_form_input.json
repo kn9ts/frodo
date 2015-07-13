@@ -1,0 +1,49 @@
+{
+    "Method": "POST",
+    "URL": {
+        "Scheme": "",
+        "Opaque": "",
+        "User": null,
+        "Host": "",
+        "Path": "/login",
+        "RawQuery": "username=astaxie",
+        "Fragment": ""
+    },
+    "Proto": "HTTP/1.1",
+    "ProtoMajor": 1,
+    "ProtoMinor": 1,
+    "Header": {
+        "Accept": ["text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"],
+        "Accept-Encoding": ["gzip, deflate"],
+        "Accept-Language": ["en-US,en;q=0.8,de;q=0.6,sw;q=0.4"],
+        "Cache-Control": ["max-age=0"],
+        "Connection": ["keep-alive"],
+        "Content-Length": ["77"],
+        "Content-Type": ["application/x-www-form-urlencoded"],
+        "Cookie": ["_ga=GA1.4.1581308941.1425994740"],
+        "Dnt": ["1"],
+        "Origin": ["http://127.0.0.1:9090"],
+        "Referer": ["http://127.0.0.1:9090/login"],
+        "User-Agent": ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.132 Safari/537.36"]
+    },
+    "Body": {},
+    "ContentLength": 77,
+    "TransferEncoding": null,
+    "Close": false,
+    "Host": "127.0.0.1:9090",
+    "Form": {
+        "password": ["wild1s75"],
+        "token": ["8bc28d1ef277735ca3ccc5e1ba36a6fd"],
+        "username": ["eugenemutai", "astaxie"]
+    },
+    "PostForm": {
+        "password": ["wild1s75"],
+        "token": ["8bc28d1ef277735ca3ccc5e1ba36a6fd"],
+        "username": ["eugenemutai"]
+    },
+    "MultipartForm": null,
+    "Trailer": null,
+    "RemoteAddr": "127.0.0.1:62119",
+    "RequestURI": "/login?username=astaxie",
+    "TLS": null
+}
