@@ -189,7 +189,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
     // Remove the 1st slash "/", so either have "root/someshit/moreshit"
     // This helps it matched the stored route paths
     requestedURLParts := strings.Split(requestURL[1:], "/")
-    fmt.Printf("\n ------- A request came in from [%s] %q --------\n\n", req.Method, req.URL.String())
+    fmt.Printf("\n------- A request came in from [%s] %q --------\n\n", req.Method, req.URL.String())
     fmt.Printf("Requested URL parts -- %q, %d \n", requestedURLParts, len(requestedURLParts))
     // fmt.Println(requestedURLParts[len(requestedURLParts)-1] == "/root")
 
@@ -215,7 +215,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
             // Collect the params in the Params array
             requestParams := &Request{
                 Request: req,
-                // params, form, file map[string]string (will be added later)
+                // params, form map[string]string,
+                // files []*UploadFile
             }
 
             // If a possible match was acquired, step 2:
@@ -264,12 +265,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
             // then all the portions matched, thus this route suffices the match
             // thus grab it's handler and run it
             if aPossibleRouteMatchFound {
-                fmt.Printf("\nParams found: %q\n", requestParams)
+                // fmt.Printf("\nParams found: %q\n", requestParams)
 
                 // Wrap the supplied http.ResponseWriter, we want to know when
                 // a write has been done by the middleware or controller and exit immediately
                 MiddlewareWriter := &MiddlewareResponseWriter{
-                    // Since http.ResponseWriter is embedded you can access it and copy it to your new ResponseWriter
+                    // Since http.ResponseWriter is embedded you can access it
                     ResponseWriter: w,
                 }
 
@@ -282,7 +283,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
                         // If there was a write, stop processing
                         if MiddlewareWriter.written {
-                            fmt.Printf("\nEXITING: A write was made by Middleware No. %d | %s \n", ix, req.Method)
+                            fmt.Printf("\nEXITING: A write was made by Middleware Number: %d | %s \n", ix, req.Method)
                             // End the connection
                             return
                         }
@@ -303,7 +304,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
                             fmt.Printf("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, MiddlewareWriter.written)
                             // If there was a write, stop processing
                             if MiddlewareWriter.written {
-                                fmt.Printf("\nEXITING: A write was made by Middleware Name. %d | %s \n", routeFilter.Name, req.Method)
+                                fmt.Printf("\nEXITING: A write was made by Middleware Name: %d | %s \n", routeFilter.Name, req.Method)
                                 // End the connection
                                 return
                             }
@@ -319,6 +320,10 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
                 // Finally run the dev's controller provided, and exit (for now, after middleware should come through)
                 route.handler(MiddlewareWriter, requestParams)
                 fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
+                if MiddlewareWriter.written {
+                    // End the connection
+                    return
+                }
                 break
             }
         }
