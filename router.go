@@ -16,7 +16,7 @@ var New *Router
 // Handle is a function that can be registered to a route to handle HTTP
 // requests. Like http.HandlerFunc, but has a third parameter for the values of
 // wildcards (variables).
-type Handle func(http.ResponseWriter, *http.Request, *Params)
+type Handle func(http.ResponseWriter, *Request)
 
 type route struct {
 	pattern string
@@ -153,8 +153,8 @@ func (r *Router) Handle(verb, pattern string, handler Handle) {
 // request handle.
 func (r *Router) Handler(method, path string, handler http.Handler) {
 	r.Handle(method, path,
-		func(w http.ResponseWriter, req *http.Request, p *Params) {
-			handler.ServeHTTP(w, req)
+		func(w http.ResponseWriter, req *Request) {
+			handler.ServeHTTP(w, req.Request)
 		},
 	)
 }
@@ -212,7 +212,10 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			aPossibleRouteMatchFound = true
 
 			// Collect the params in the Params array
-			requestParams := new(Params)
+			requestParams := &Request{
+				Request: req,
+				// params, form, file map[string]string (will be added later)
+			}
 
 			// If a possible match was acquired, step 2:
 			// loop thru each part of the route pattern matching them, if one fails then it's a no match
@@ -265,6 +268,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				// Wrap the supplied http.ResponseWriter, we want to know when
 				// a write has been done by the middleware or controller and exit immediately
 				MiddlewareWriter := &MiddlewareResponseWriter{
+					// Since http.ResponseWriter is embedded you can access it and copy it to your new ResponseWriter
 					ResponseWriter: w,
 				}
 
@@ -272,7 +276,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				if len(r.BeforeMiddleware) > 0 {
 					for ix, beforeFilter := range r.BeforeMiddleware {
 						// Pass it as the ResponseWriter instead
-						beforeFilter(MiddlewareWriter, req, requestParams)
+						beforeFilter(MiddlewareWriter, requestParams)
 						fmt.Printf("\nBEFORE Middleware No. %d running: Written - %s | Request: - %v \n", ix, req.Method, MiddlewareWriter.written)
 
 						// If there was a write, stop processing
@@ -294,7 +298,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					for _, routeFilter := range r.FilterMiddleware {
 						// Try find any route filter that matches the route pattern and run them
 						if routeFilter.Name == route.pattern {
-							routeFilter.Handle(MiddlewareWriter, req, requestParams)
+							routeFilter.Handle(MiddlewareWriter, requestParams)
 							fmt.Printf("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, MiddlewareWriter.written)
 							// If there was a write, stop processing
 							if MiddlewareWriter.written {
@@ -311,9 +315,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
 				}
 
-				// Finally run the dev's controller provided,
-				// and exit (for now, after middleware should come through)
-				route.handler(MiddlewareWriter, req, requestParams)
+				// Finally run the dev's controller provided, and exit (for now, after middleware should come through)
+				route.handler(MiddlewareWriter, requestParams)
 				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
 				break
 			}
@@ -321,12 +324,12 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// Serve deploys the application to the defualt port:3000
+// Serve Deploys the application to the route given
 func (r *Router) Serve() {
 	http.ListenAndServe(":3000", r)
 }
 
-// ServeOnPort is to used if you prefer serving the application on a different port
+// ServeOnPort is to used if you change the port that you plan on serving on
 func (r *Router) ServeOnPort(portNumber interface{}) {
 	// Converting an interface into the data type it should be
 	portNumber = portNumber.(int)
@@ -334,16 +337,15 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 		portNumber = 3000
 	}
 
-	// Convert the port, an int into a string
 	portNumberString := strconv.Itoa(portNumber.(int))
-	http.ListenAndServe(":"+portNumberString, r)
 	fmt.Println("Server deployed at: " + portNumberString)
+	http.ListenAndServe(":"+portNumberString, r)
 }
 
 // AddFilters add Middlewares to routes, requests and responses
 func (r *Router) AddFilters(m *Middleware) {
+	fmt.Printf("\nMiddleware added %q\n", m.BeforeMiddleware)
 	r.Middleware.BeforeMiddleware = m.BeforeMiddleware
 	r.Middleware.AfterMiddleware = m.AfterMiddleware
 	r.Middleware.FilterMiddleware = m.FilterMiddleware
-	// fmt.Printf("\nMiddleware added %q\n", m.BeforeMiddleware)
 }
