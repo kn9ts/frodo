@@ -24,6 +24,7 @@ func (console *Logger) WriteToFile() (*log.Logger, error) {
 	file, err := os.OpenFile(console.FilePath+console.FileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		clog := color.New(color.FgRed).Add(color.Bold)
+		defer color.Unset()
 		clog.Println("------ Failed to open Logger file ------\n")
 		return nil, err
 	}
@@ -52,16 +53,19 @@ func (console *Logger) Error(format string, args ...interface{}) {
 
 func (console *Logger) Alert(format string, args ...interface{}) {
 	color.Set(color.BgMagenta, color.FgWhite, color.Bold)
+	defer color.Unset()
 	log.Printf(format, args...)
 }
 
 func (console *Logger) Critical(format string, args ...interface{}) {
 	color.Set(color.BgRed, color.FgWhite, color.Bold)
+	defer color.Unset()
 	log.Printf(format, args...)
 }
 
 func (console *Logger) printOut(colorAttr color.Attribute, isBold bool, format string, args ...interface{}) {
 	newlog := color.Set(colorAttr)
+	defer color.Unset()
 	if isBold {
 		newlog.Add(color.Bold)
 	}
