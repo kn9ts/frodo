@@ -83,14 +83,14 @@ func (r *Router) addRoute(verb string, args ...interface{}) {
 		}
 
 		// Check to see if a HandleFunc was provided if not
-		v := reflect.ValueOf(args[1]).Type().Kind()
+		v := reflect.ValueOf(args[1]).Type()
 		Log.Info("%s", v)
 
 		// First of check if it is a function and also it suffices the HandleFunc type pattern
 		// If it does -- func(http.ResponseWriter, *Request)
 		// then convert it to a Frodo.HandleFunc type
 		// this becomes neat since this what we expect to run
-		if value, ok := args[1].(func(http.ResponseWriter, *Request)); ok && v.String() == "func" {
+		if value, ok := args[1].(func(http.ResponseWriter, *Request)); ok && v.Kind().String() == "func" {
 			makeHandler := func(h HandleFunc) HandleFunc {
 				Log.Warn("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
 				return h
@@ -102,19 +102,25 @@ func (r *Router) addRoute(verb string, args ...interface{}) {
 				Log.Error("Error: expected handler arguement provided to be an extension of Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
 				panic("Oops!")
 			}
+			args[1] = args[1].(ControllerInterface)
+
 		}
 		Log.Info("---- %q ----", reflect.ValueOf(args[1]).Type().String())
 
 		// if the arguments are 3
 		if len(args) > 2 {
 			// check if the meta/controller information type is Frodo.Use
-			if _, isString := args[2].(Use); !isString {
+			if _, isUseStruct := args[2].(Use); !isUseStruct {
 				// if it is not Frodo.Use, then check if it is a string
-				if _, isUseStruct := args[2].(string); !isUseStruct {
+				// probably we were just given the name of the route
+				if _, isString := args[2].(string); !isString {
 					// If all the tests have passed,
 					Log.Error("Error: expected controller informative argument provided to be a string or Frodo.Use type")
 					panic("Oops!")
 				}
+				args[2] = args[2].(string)
+			} else {
+				args[2] = args[2].(Use)
 			}
 
 			// we now have pattern, handle and info/name
@@ -488,21 +494,36 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // Serve Deploys the application to the route given
 func (r *Router) Serve() {
-	fmt.Printf("Server deployed at: %d", 3000)
-	http.ListenAndServe(":3000", r)
+	r.ServeOnPort(3000)
 }
 
 // ServeOnPort is to used if you change the port that you plan on serving on
 func (r *Router) ServeOnPort(portNumber interface{}) {
+	var portNumberString string
 	// Converting an interface into the data type it should be
-	portNumber = portNumber.(int)
-	if portNumber == 0 {
-		portNumber = 3000
+	if pn, ok := portNumber.(int); ok {
+		if pn < 999 {
+			pn = 3000
+		}
+		portNumberString = strconv.Itoa(pn)
+	} else {
+		// if it is not a number/int provided then it must be a string
+		if pns, ok := portNumber.(string); ok {
+			if pns == "" {
+				pns = "3000"
+			}
+			portNumberString = pns
+		} else {
+			Log.Fatal("Error: PortNumber can only be a numeral string or integer")
+		}
 	}
 
-	portNumberString := strconv.Itoa(portNumber.(int))
-	Log.Info("Server deployed at: %s", portNumberString)
-	http.ListenAndServe(":"+portNumberString, r)
+	err := http.ListenAndServe(":"+portNumberString, r)
+	if err != nil {
+		Log.Fatal("Error: server failed to initialise: %e", err)
+	}
+	// If server successfully Launched
+	Log.Success("Server deployed at: %s", portNumberString)
 }
 
 // AddFilters add Middlewares to routes, requests and responses
