@@ -10,7 +10,7 @@ type Home struct {
 	Frodo.Controller
 }
 
-// Get is overriding and defining your own get method
-func (h *Home) Get(w http.ResponseWriter, r *Frodo.Request) {
+// Index is the default route handler for "/" route
+func (h *Home) Index(w http.ResponseWriter, r *Frodo.Request) {
 	w.Write([]byte("Hello world"))
 }

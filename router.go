@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"regexp"
 	// "regexp/syntax"
-	// "reflect"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -13,21 +13,26 @@ import (
 // New global var is used to launch the app/routing
 var New *Router
 
-// Handle is a function that can be registered to a route to handle HTTP requests.
-// Like http.HandlerFunc, but has a third parameter for the values of wildcards (variables).
-// UPDATE: http.Request fused with Params, input and uploads
-// adde extra Facades to handle these options neatly
-type Handle func(http.ResponseWriter, *Request)
+// Handle should be able to carry a HandleFunc or a Controller
+// thus only both can satisfy an interface
+type Handle interface{}
 
+// HandleFunc is a function that can be registered to a route to handle HTTP requests.
+// http.Request is now fused with Params, Inputs and Uploads custom handlers
+// these are Facades to handle common request processing cases eg. saving a file
+type HandleFunc func(http.ResponseWriter, *Request)
+
+// properties of a single route
 type route struct {
 	pattern string
-	handler Handle
+	handler interface{}
 	isRegex int
 	depth   int
+	Use     // Handles extra details
 }
 
 // Methods type is used in Match method to get all methods user wants to apply
-// the related handler to
+// that will help in invoking the related handler
 type Methods []string
 
 // Router is a http.Handler which can be used to dispatch requests to different
@@ -44,8 +49,143 @@ func (r *Router) Application() *Router {
 }
 
 // Get is a shortcut for router.Add("GET", pattern, handle)
-func (r *Router) Get(pattern string, handle Handle) {
-	r.Handle("GET", pattern, handle)
+func (r *Router) Get(args ...interface{}) {
+	// r.Handle("GET", pattern, handle)
+	r.addRoute("GET", args...)
+}
+
+// CheckRoute - using to test the passing of many arguments in Routing
+func (r *Router) CheckRoute(args ...interface{}) {
+	meta := make(map[string]interface{})
+	for _, value := range args {
+		v := reflect.ValueOf(value)
+		meta[v.Kind().String()] = v.Interface()
+		switch v.Kind().String() {
+		case "ptr":
+			fmt.Printf("it is a pointer")
+		case "string":
+			fmt.Printf("it is a string")
+
+		}
+	}
+	fmt.Printf("=======================> %q\n", meta)
+}
+
+func (r *Router) addRoute(verb string, args ...interface{}) {
+
+	// at least 2 and a max of 3 arguments are suppost to be provided
+	if len(args) > 1 && len(args) < 4 {
+
+		// check if the 1st parameter is a string
+		if _, isString := args[0].(string); !isString {
+			Log.Error("Error: expected pattern arguement expecting a string")
+			return
+		}
+
+		// Check to see if a HandleFunc was provided if not
+		v := reflect.ValueOf(args[1]).Type().Kind()
+		Log.Info("%s", v)
+
+		// First of check if it is a function and also it suffices the HandleFunc type pattern
+		// If it does -- func(http.ResponseWriter, *Request)
+		// then convert it to a Frodo.HandleFunc type
+		// this becomes neat since this what we expect to run
+		if value, ok := args[1].(func(http.ResponseWriter, *Request)); ok && v.String() == "func" {
+			makeHandler := func(h HandleFunc) HandleFunc {
+				Log.Warn("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
+				return h
+			}
+			args[1] = makeHandler(value)
+		} else {
+			// further checked if it is a Controller
+			if _, isController := args[1].(ControllerInterface); !isController {
+				Log.Error("Error: expected handler arguement provided to be an extension of Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
+				panic("Oops!")
+			}
+		}
+		Log.Info("---- %q ----", reflect.ValueOf(args[1]).Type().String())
+
+		// if the arguments are 3
+		if len(args) > 2 {
+			// check if the meta/controller information type is Frodo.Use
+			if _, isString := args[2].(Use); !isString {
+				// if it is not Frodo.Use, then check if it is a string
+				if _, isUseStruct := args[2].(string); !isUseStruct {
+					// If all the tests have passed,
+					Log.Error("Error: expected controller informative argument provided to be a string or Frodo.Use type")
+					panic("Oops!")
+				}
+			}
+
+			// we now have pattern, handle and info/name
+			fmt.Printf("pattern: %s | handle: %q | use: %q\n", args[0].(string), reflect.ValueOf(args[1]).Type(), reflect.ValueOf(args[2]).Type())
+		} else {
+			// only pattern and handler are given
+			fmt.Printf("pattern: %s | handle: %q\n", args[0].(string), reflect.ValueOf(args[1]).Type())
+		}
+
+	} else {
+		// not enough arguements provided
+		Log.Error("Error: Not enough arguements provided.")
+		defer panic("Ooops!")
+		return
+	}
+}
+
+// Handle2 registers a new request handle with the given path and method.
+// For GET, POST, PUT, PATCH and DELETE requests the respective shortcut
+// functions can be used.
+func (r *Router) Handle2(verb, pattern string, handler Handle, u Use) {
+	var routeExists bool
+
+	// If it is "/" <-- root directory
+	if li := strings.LastIndex(pattern, "/"); li == 0 && (len(pattern)-1) == li {
+		pattern = "/root"
+	}
+
+	// word := "GET", "POST", "UPDATE"
+	// capitalise the word if it is in lowercase
+	httpVerb := strings.ToUpper(verb)
+
+	// Check to see if there is a Routes Map Array for the given HTTP Verb
+	_, exists := r.paths[httpVerb]
+
+	// check to see if it is a regex pattern given from dev
+	isReg := len(regexp.MustCompile(`\{[\w.-]{2,}\}`).FindAllString(pattern, -1))
+	depth := len(strings.Split(pattern[1:], "/"))
+
+	newRoute := route{
+		pattern: pattern,
+		handler: handler,
+		isRegex: isReg / 2,
+		depth:   depth,
+	}
+	fmt.Printf("Adding this path to the Router.path[%s] :: %v\n", httpVerb, newRoute)
+
+	// If the route map exists r["GET"], r["POST"]...etc`
+	if exists {
+		// loop thru the list of existing routes
+		for _, rt := range r.paths[httpVerb] {
+			// check to see if the route already exists
+			if rt.pattern == pattern {
+				routeExists = true
+			}
+		}
+
+		// If it has not been added, add it
+		if !routeExists {
+			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
+			// fmt.Println(r.paths[httpVerb])
+		}
+	} else {
+		// initialise the path map, if nothing had been added
+		if len(r.paths) == 0 {
+			fmt.Println("Zero routes added, must initialise and then add")
+			r.paths = make(map[string][]route)
+		}
+		// add the 1st path
+		r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
+	}
 }
 
 // Post is a shortcut for router.Add("POST", pattern, handle)
@@ -276,9 +416,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 				// Get Application's "Before" Middleware and run them
 				if len(r.BeforeMiddleware) > 0 {
-					for ix, beforeFilter := range r.BeforeMiddleware {
+					for ix, _ := range r.BeforeMiddleware {
 						// Pass it as the ResponseWriter instead
-						beforeFilter(MiddlewareWriter, requestParams)
+						// beforeFilter(MiddlewareWriter, requestParams)
 						fmt.Printf("\nBEFORE Middleware No. %d running: Written - %s | Request: - %v \n", ix, req.Method, MiddlewareWriter.written)
 
 						// If there was a write, stop processing
@@ -300,7 +440,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					for _, routeFilter := range r.FilterMiddleware {
 						// Try find any route filter that matches the route pattern and run them
 						if routeFilter.Name == route.pattern {
-							routeFilter.Handle(MiddlewareWriter, requestParams)
+							// routeFilter.Handle(MiddlewareWriter, requestParams)
 							fmt.Printf("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, MiddlewareWriter.written)
 							// If there was a write, stop processing
 							if MiddlewareWriter.written {
@@ -317,8 +457,24 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
 				}
 
-				// Finally run the dev's controller provided, and exit (for now, after middleware should come through)
-				route.handler(MiddlewareWriter, requestParams)
+				// Finally run the dev's controller provided, and exit (for now though, after middleware to be added)
+
+				/*
+
+				   ------- RESULTS: -----
+
+				   Value:  <*Frodo.Controller Value>
+				   Type:  *Frodo.Controller
+				   Kind:  ptr
+				   Interface:  &{Get }
+				   Pointer:  833357997216
+				   Elem:  <Frodo.Controller Value>
+
+				*/
+				v := reflect.ValueOf(route.handler)
+				fmt.Println("Type: ", v.Type().String())
+				// route.handler(w, requestParams)
+
 				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
 				if MiddlewareWriter.written {
 					// End the connection
@@ -332,9 +488,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // Serve Deploys the application to the route given
 func (r *Router) Serve() {
-	Log.FilePath = "./"
-	lf, _ := Log.WriteToFile()
-	lf.Printf("Server deployed at: %d", 3000)
+	fmt.Printf("Server deployed at: %d", 3000)
 	http.ListenAndServe(":3000", r)
 }
 
