@@ -7,12 +7,14 @@ import (
 	"os"
 )
 
+// Logger embeds *log.Logger thus is able to handle all logs
 type Logger struct {
 	FilePath, FileName string
 	LogFile            *log.Logger
 	buffers            *bytes.Buffer
 }
 
+// Log will be global var that handles Frodo's logging
 var Log *Logger
 
 func init() {
@@ -26,6 +28,77 @@ func init() {
 	}
 }
 
+// Initialise checks if a logging instance exists, if not commence one
+func (console *Logger) Initialise() {
+	// For now collect all the buffers on to a buffer memory
+	buffer := new(bytes.Buffer)
+	console.LogFile = log.New(buffer, "Frodo: ", log.Ldate|log.Ltime|log.Lshortfile)
+}
+
+// Info can be used to log informative information of the application
+func (console *Logger) Info(format string, args ...interface{}) {
+	console.log(color.FgCyan, false, format, args...)
+}
+
+// Debug logs debug information
+func (console *Logger) Debug(format string, args ...interface{}) {
+	console.log(color.FgWhite, false, format, args...)
+}
+
+// Success can be used to log information on successful transactions
+// logs in green
+func (console *Logger) Success(format string, args ...interface{}) {
+	console.log(color.FgGreen, false, format, args...)
+}
+
+// Warn can be used  to log meaningful and light errors/bugs that might want to be checked later
+func (console *Logger) Warn(format string, args ...interface{}) {
+	console.log(color.FgYellow, false, format, args...)
+}
+
+// Error can be used to log Errors
+// red in color
+func (console *Logger) Error(format string, args ...interface{}) {
+	console.log(color.FgRed, false, format, args...)
+}
+
+// Alert can be used to log Alerts, maybe on certain events!!
+// Magenta background, white text
+func (console *Logger) Alert(format string, args ...interface{}) {
+	color.Set(color.BgMagenta, color.FgWhite, color.Bold)
+	defer color.Unset()
+	console.LogFile.Printf(format, args...)
+}
+
+// Critical can be used to log system wide Critical information that needs to be fixed immediately
+// Red background and white text
+func (console *Logger) Critical(format string, args ...interface{}) {
+	color.Set(color.BgRed, color.FgWhite, color.Bold)
+	defer color.Unset()
+	console.LogFile.Fatalf(format, args...)
+}
+
+// Fatal is similar to Frodo.Log.Error but panics after logging
+func (console *Logger) Fatal(format string, args ...interface{}) {
+	color.Set(color.BgRed, color.FgWhite, color.Bold)
+	defer color.Unset()
+	console.LogFile.Fatalf(format, args...)
+}
+
+// main logging handler
+func (console *Logger) log(colorAttr color.Attribute, isBold bool, format string, args ...interface{}) {
+	newlog := color.Set(colorAttr)
+	defer color.Unset()
+	if isBold {
+		newlog.Add(color.Bold)
+	}
+
+	// I want it log both into the file and on the console
+	log.Printf(format, args...)
+	console.LogFile.Printf(format, args...)
+}
+
+// WriteToFile prompts all logs to be written to a file
 func (console *Logger) WriteToFile(fl ...interface{}) (*log.Logger, error) {
 
 	// If arguements are provided, then expect:
@@ -43,10 +116,16 @@ func (console *Logger) WriteToFile(fl ...interface{}) (*log.Logger, error) {
 		}
 	}
 
-	err := os.Mkdir(console.FilePath, 0775)
+	dir, err := os.Stat(console.FilePath)
 	if err != nil {
-		Log.Error("Error: Failed to create folder %s", console.FilePath)
+		Log.Error("Error: Directory %s does not exist.", console.FilePath)
 	}
+
+	if !dir.IsDir() {
+		Log.Fatal("Error: %s is not a directory/folder.", console.FilePath)
+	}
+
+	Log.Info("Debug information will be logged at: %s/%s", dir.Name(), console.FileName)
 
 	// 1st check to see if the path and filename provided exists
 	// create a new file if none exists.
@@ -61,62 +140,7 @@ func (console *Logger) WriteToFile(fl ...interface{}) (*log.Logger, error) {
 	return console.LogFile, nil
 }
 
-func (console *Logger) Initialise() {
-	// For now collect all the buffers on to a buffer memory
-	buffer := new(bytes.Buffer)
-	console.LogFile = log.New(buffer, "Frodo: ", log.Ldate|log.Ltime|log.Lshortfile)
-}
-
-func (console *Logger) Info(format string, args ...interface{}) {
-	console.log(color.FgCyan, false, format, args...)
-}
-
-func (console *Logger) Debug(format string, args ...interface{}) {
-	console.log(color.FgWhite, false, format, args...)
-}
-
-func (console *Logger) Success(format string, args ...interface{}) {
-	console.log(color.FgGreen, false, format, args...)
-}
-
-func (console *Logger) Warn(format string, args ...interface{}) {
-	console.log(color.FgYellow, false, format, args...)
-}
-
-func (console *Logger) Error(format string, args ...interface{}) {
-	console.log(color.FgRed, false, format, args...)
-}
-
-func (console *Logger) Alert(format string, args ...interface{}) {
-	color.Set(color.BgMagenta, color.FgWhite, color.Bold)
-	defer color.Unset()
-	console.LogFile.Printf(format, args...)
-}
-
-func (console *Logger) Critical(format string, args ...interface{}) {
-	color.Set(color.BgRed, color.FgWhite, color.Bold)
-	defer color.Unset()
-	console.LogFile.Printf(format, args...)
-}
-
-func (console *Logger) Fatal(format string, args ...interface{}) {
-	color.Set(color.BgRed, color.FgWhite, color.Bold)
-	defer color.Unset()
-	console.LogFile.Fatalf(format, args...)
-}
-
-func (console *Logger) log(colorAttr color.Attribute, isBold bool, format string, args ...interface{}) {
-	newlog := color.Set(colorAttr)
-	defer color.Unset()
-	if isBold {
-		newlog.Add(color.Bold)
-	}
-
-	// I want it log both into the file and on the console
-	log.Printf(format, args...)
-	console.LogFile.Printf(format, args...)
-}
-
+// Dump simply does just that. Dumps all the logging that has been collected by the buffer
 func (console *Logger) Dump() {
 	console.LogFile.Print(console.buffers)
 }
