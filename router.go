@@ -81,33 +81,37 @@ func (r *Router) addRoute(verb string, args ...interface{}) {
 			Log.Error("Error: expected pattern arguement expecting a string")
 			return
 		}
+		pattern := args[0].(string)
 
 		// Check to see if a HandleFunc was provided if not
 		v := reflect.ValueOf(args[1]).Type()
-		Log.Info("%s", v)
+		Log.Info("==> %s", v)
 
 		// First of check if it is a function and also it suffices the HandleFunc type pattern
 		// If it does -- func(http.ResponseWriter, *Request)
 		// then convert it to a Frodo.HandleFunc type
 		// this becomes neat since this what we expect to run
+		// isHandleFunc := false
 		if value, ok := args[1].(func(http.ResponseWriter, *Request)); ok && v.Kind().String() == "func" {
 			makeHandler := func(h HandleFunc) HandleFunc {
-				Log.Warn("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
+				Log.Debug("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
 				return h
 			}
+			// morph it to it's dynamic data type
 			args[1] = makeHandler(value)
+			// isHandleFunc = true
 		} else {
 			// further checked if it is a Controller
 			if _, isController := args[1].(ControllerInterface); !isController {
-				Log.Error("Error: expected handler arguement provided to be an extension of Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
-				panic("Oops!")
+				Log.Fatal("Error: expected handler arguement provided to be an extension of Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
 			}
 			args[1] = args[1].(ControllerInterface)
-
 		}
+		handler := args[1]
 		Log.Info("---- %q ----", reflect.ValueOf(args[1]).Type().String())
 
 		// if the arguments are 3
+		isString := false
 		if len(args) > 2 {
 			// check if the meta/controller information type is Frodo.Use
 			if _, isUseStruct := args[2].(Use); !isUseStruct {
@@ -115,82 +119,84 @@ func (r *Router) addRoute(verb string, args ...interface{}) {
 				// probably we were just given the name of the route
 				if _, isString := args[2].(string); !isString {
 					// If all the tests have passed,
-					Log.Error("Error: expected controller informative argument provided to be a string or Frodo.Use type")
-					panic("Oops!")
+					Log.Fatal("Error: expected controller informative argument provided to be a string or Frodo.Use type")
 				}
 				args[2] = args[2].(string)
+				isString = true
 			} else {
 				args[2] = args[2].(Use)
 			}
-
 			// we now have pattern, handle and info/name
-			fmt.Printf("pattern: %s | handle: %q | use: %q\n", args[0].(string), reflect.ValueOf(args[1]).Type(), reflect.ValueOf(args[2]).Type())
+			Log.Debug("pattern: %s | handle: %q | use/name: %q\n", pattern, reflect.ValueOf(args[1]).Type(), reflect.ValueOf(args[2]).Type())
 		} else {
 			// only pattern and handler are given
-			fmt.Printf("pattern: %s | handle: %q\n", args[0].(string), reflect.ValueOf(args[1]).Type())
+			Log.Debug("pattern: %s | handle: %q\n", pattern, reflect.ValueOf(args[1]).Type())
 		}
 
+		var routeExists bool
+
+		// If it is "/" <-- root directory
+		if li := strings.LastIndex(pattern, "/"); li == 0 && (len(pattern)-1) == li {
+			pattern = "/root"
+		}
+
+		// word := "GET", "POST", "UPDATE"
+		// capitalise the word if it is in lowercase
+		httpVerb := strings.ToUpper(verb)
+
+		// Check to see if there is a Routes Map Array for the given HTTP Verb
+		_, exists := r.paths[httpVerb]
+
+		// check to see if it is a regex pattern given from dev
+		isReg := len(regexp.MustCompile(`\{[\w.-]{2,}\}`).FindAllString(pattern, -1))
+		depth := len(strings.Split(pattern[1:], "/"))
+
+		newRoute := route{}
+		newRoute.pattern = pattern
+		newRoute.handler = handler
+		newRoute.isRegex = isReg / 2
+		newRoute.depth = depth
+
+		// Add if the name or  meta data of route, if they were given
+		if len(args) > 2 {
+			if isString {
+				newRoute.Name = args[2].(string)
+			} else {
+				newRoute.Use = args[2].(Use)
+			}
+		}
+
+		// If the route map exists r["GET"], r["POST"]...etc`
+		if exists {
+			// loop thru the list of existing routes
+			for _, rt := range r.paths[httpVerb] {
+				// check to see if the route already exists
+				if rt.pattern == pattern {
+					routeExists = true
+				}
+			}
+
+			// If it has not been added, add it
+			if !routeExists {
+				r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
+				// fmt.Println(r.paths[httpVerb])
+			}
+		} else {
+			// initialise the path map, if nothing had been added
+			if len(r.paths) == 0 {
+				Log.Warn("Zero routes added, must initialise and then add")
+				r.paths = make(map[string][]route)
+			}
+			// add the 1st path
+			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
+		}
+
+		Log.Success("Adding this route[%v] for the METHOD[%s]\n", httpVerb, newRoute)
 	} else {
 		// not enough arguements provided
 		Log.Error("Error: Not enough arguements provided.")
 		defer panic("Ooops!")
 		return
-	}
-}
-
-// Handle2 registers a new request handle with the given path and method.
-// For GET, POST, PUT, PATCH and DELETE requests the respective shortcut
-// functions can be used.
-func (r *Router) Handle2(verb, pattern string, handler Handle, u Use) {
-	var routeExists bool
-
-	// If it is "/" <-- root directory
-	if li := strings.LastIndex(pattern, "/"); li == 0 && (len(pattern)-1) == li {
-		pattern = "/root"
-	}
-
-	// word := "GET", "POST", "UPDATE"
-	// capitalise the word if it is in lowercase
-	httpVerb := strings.ToUpper(verb)
-
-	// Check to see if there is a Routes Map Array for the given HTTP Verb
-	_, exists := r.paths[httpVerb]
-
-	// check to see if it is a regex pattern given from dev
-	isReg := len(regexp.MustCompile(`\{[\w.-]{2,}\}`).FindAllString(pattern, -1))
-	depth := len(strings.Split(pattern[1:], "/"))
-
-	newRoute := route{
-		pattern: pattern,
-		handler: handler,
-		isRegex: isReg / 2,
-		depth:   depth,
-	}
-	fmt.Printf("Adding this path to the Router.path[%s] :: %v\n", httpVerb, newRoute)
-
-	// If the route map exists r["GET"], r["POST"]...etc`
-	if exists {
-		// loop thru the list of existing routes
-		for _, rt := range r.paths[httpVerb] {
-			// check to see if the route already exists
-			if rt.pattern == pattern {
-				routeExists = true
-			}
-		}
-
-		// If it has not been added, add it
-		if !routeExists {
-			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
-			// fmt.Println(r.paths[httpVerb])
-		}
-	} else {
-		// initialise the path map, if nothing had been added
-		if len(r.paths) == 0 {
-			fmt.Println("Zero routes added, must initialise and then add")
-			r.paths = make(map[string][]route)
-		}
-		// add the 1st path
-		r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
 	}
 }
 
