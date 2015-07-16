@@ -19,9 +19,8 @@ func main() {
 		w.Write([]byte("Hello World"))
 	})
 
-	App.Get("/me", &controller.Users{})
+	App.Get("/me", &controller.Users{}, "me")
 	App.Get("/users", &controller.Users{}, Frodo.Use{Method: "Show", Name: "users", Filter: "auth"})
-	App.Post("/profile", &controller.Home{}, Frodo.Use{Method: "Index", Name: "profile"})
 
 	App.Get("/settings", func(w http.ResponseWriter, r *Frodo.Request) {
 		w.Write([]byte("Hello Setting"))
@@ -31,13 +30,15 @@ func main() {
 		w.Write([]byte("Hello page here, the ID passed is " + r.Param("id"))) // send data to client side
 	})
 
+	App.Match(Frodo.Methods{"GET", "POST"}, "/home", func(w http.ResponseWriter, r *Frodo.Request) {
+		Reponse.JSON(w, http.StatusOK, r)
+	}, "home")
+
+	App.Post("/profile", &controller.Home{}, Frodo.Use{Method: "Index", Name: "profile"})
+
 	App.Post("/payments", func(w http.ResponseWriter, r *Frodo.Request) {
 		w.Write([]byte("Hello Payments"))
 	}, "payments")
-
-	App.Match(Frodo.Methods{"GET", "POST"}, "/home", func(w http.ResponseWriter, r *Frodo.Request) {
-		Reponse.JSON(w, http.StatusOK, r)
-	})
 
 	App.Post("/{name}", func(w http.ResponseWriter, r *Frodo.Request) {
 		// send data to client side
@@ -49,6 +50,7 @@ func main() {
 	Frodo.Log.WriteToFile()
 
 	App.AddFilters(filters.MiddleWare)
+	App.ServeFiles("/assets", "example/assets")
 	App.Serve()
 	// App.ServeOnPort(3000)
 }

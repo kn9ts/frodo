@@ -3,9 +3,8 @@ package Frodo
 import (
 	"fmt"
 	"net/http"
-	"regexp"
-	// "regexp/syntax"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -288,6 +287,34 @@ func (r *Router) On404(handler HandleFunc) {
 	r.NotFound(handler)
 }
 
+// ServeFiles serves files from the given file system root.
+// TODO: Be able to add a list of file types, and names that should not be served
+func (r *Router) ServeFiles(pattern, assetDir string) {
+	// Defualt assetDir = "[/]assets/"
+	// returns a handler that serves HTTP requests
+	// with the contents of the file system rooted at root.
+	fs := http.FileServer(http.Dir(assetDir))
+
+	r.Get(pattern+"/{filepath}", func(w http.ResponseWriter, r *Request) {
+		r.URL.Path = r.Param("filepath")
+		Log.Info("Serving the static file: %s", r.URL.Path)
+		// http.ServeFile(w, r.Request, r.Param("filepath"))
+		fs.ServeHTTP(w, r.Request)
+	})
+}
+
+// // Assets can be used instead of ServeFiles
+// // though internally it uses ServeFiles() since they do the same thing
+// func (r *Router) Assets(path string) {
+// 	r.ServeFiles(path)
+// }
+//
+// // Static can be used instead of Assets, ServeFiles
+// // though internally it uses ServeFiles() since they do the same thing
+// func (r *Router) Static(path string) {
+// 	r.ServeFiles(path)
+// }
+
 // ServeHTTP will receive all requests, and process them for our router
 // By using it we are implementing the http.Handler and thus can use our own ways to
 // handle incoming requests and process them
@@ -414,7 +441,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						// If no match here, falsify & break the search nothing found
 						aPossibleRouteMatchFound = false
 						// BREAK: No match found at all.
-						fmt.Printf("Did they match", aPossibleRouteMatchFound)
+						fmt.Printf("Did they match: %v\n", aPossibleRouteMatchFound)
+						break
 					}
 				}
 			}
@@ -436,7 +464,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						// If there was a write, stop processing
 						if FrodoWritter.written {
 							// End the connection
-							fmt.Printf("has written ===>", FrodoWritter.written)
+							fmt.Printf("has written ==> %v", FrodoWritter.written)
 							return
 						}
 					}
