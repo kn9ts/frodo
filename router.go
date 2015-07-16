@@ -427,9 +427,13 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// Serve Deploys the application to the route given
+// Serve deploys the application
+// Default port is 3102, inspired by https://en.wikipedia.org/wiki/Fourth_Age
+// The Fourth Age followed the defeat of Sauron and the destruction of his One Ring,
+// but did not officially begin until after the Bearers of the Three Rings left Middle-earth for Valinor,
+// the 'Uttermost West'
 func (r *Router) Serve() {
-	r.ServeOnPort(3000)
+	r.ServeOnPort(3102)
 }
 
 // ServeOnPort is to used if you change the port that you plan on serving on
@@ -437,15 +441,12 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 	var portNumberString string
 	// Converting an interface into the data type it should be
 	if pn, ok := portNumber.(int); ok {
-		if pn < 999 {
-			pn = 3000
-		}
 		portNumberString = strconv.Itoa(pn)
 	} else {
 		// if it is not a number/int provided then it must be a string
 		if pns, ok := portNumber.(string); ok {
 			if pns == "" {
-				pns = "3000"
+				pns = "3102"
 			}
 			portNumberString = pns
 		} else {
@@ -455,7 +456,7 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 
 	err := http.ListenAndServe(":"+portNumberString, r)
 	if err != nil {
-		Log.Fatal("Error: server failed to initialise: %e", err)
+		Log.Fatal("Error: server failed to initialise: %s", err)
 	}
 	// If server successfully Launched
 	Log.Success("Server deployed at: %s", portNumberString)
