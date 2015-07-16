@@ -48,30 +48,61 @@ func (r *Router) Application() *Router {
 	return New
 }
 
-// Get is a shortcut for router.Add("GET", pattern, handle)
+// Get is a shortcut for router.addHandle("GET", args...)
 func (r *Router) Get(args ...interface{}) {
-	// r.Handle("GET", pattern, handle)
-	r.addRoute("GET", args...)
+	r.addHandle("GET", args...)
 }
 
-// CheckRoute - using to test the passing of many arguments in Routing
-func (r *Router) CheckRoute(args ...interface{}) {
-	meta := make(map[string]interface{})
-	for _, value := range args {
-		v := reflect.ValueOf(value)
-		meta[v.Kind().String()] = v.Interface()
-		switch v.Kind().String() {
-		case "ptr":
-			fmt.Printf("it is a pointer")
-		case "string":
-			fmt.Printf("it is a string")
+// Post is a shortcut for router.addHandle("POST", args...)
+func (r *Router) Post(args ...interface{}) {
+	r.addHandle("POST", args...)
+}
 
+// Put is a shortcut for router.addHandle("PUT", args...)
+func (r *Router) Put(args ...interface{}) {
+	r.addHandle("PUT", args...)
+}
+
+// Patch is a shortcut for router.addHandle("PATCH", args...)
+func (r *Router) Patch(args ...interface{}) {
+	r.addHandle("POST", args...)
+}
+
+// Delete is a shortcut for router.addHandle("DELETE", args...)
+func (r *Router) Delete(args ...interface{}) {
+	r.addHandle("DELETE", args...)
+}
+
+// Head is a shortcut for router.addHandle("HEAD", args...)
+func (r *Router) Head(args ...interface{}) {
+	r.addHandle("HEAD", args...)
+}
+
+// Options is a shortcut for router.addHandle("OPTIONS", args...)
+func (r *Router) Options(args ...interface{}) {
+	r.addHandle("OPTIONS", args...)
+}
+
+// Match adds the Handle to the provided Methods/HTTPVerbs for a given route
+// EG. GET/POST from /home to have the same Handle
+func (r *Router) Match(httpVerbs Methods, args ...interface{}) {
+	if len(httpVerbs) > 0 {
+		for _, verb := range httpVerbs {
+			r.addHandle(strings.ToUpper(verb), args...)
 		}
 	}
-	fmt.Printf("=======================> %q\n", meta)
 }
 
-func (r *Router) addRoute(verb string, args ...interface{}) {
+// All method adds the Handle to all Methods/HTTPVerbs for a given route
+func (r *Router) All(args ...interface{}) {
+	methods := Methods{"GET", "POST", "PATCH", "PUT", "DELETE", "PATCH"}
+	r.Match(methods, args...)
+}
+
+// addHandle registers a new request handle with the given path and method.
+// For GET, POST, PUT, PATCH and DELETE requests the respective shortcut
+// functions can be used.
+func (r *Router) addHandle(verb string, args ...interface{}) {
 
 	// at least 2 and a max of 3 arguments are suppost to be provided
 	if len(args) > 1 && len(args) < 4 {
@@ -87,25 +118,28 @@ func (r *Router) addRoute(verb string, args ...interface{}) {
 		v := reflect.ValueOf(args[1]).Type()
 		Log.Info("==> %s", v)
 
-		// First of check if it is a function and also it suffices the HandleFunc type pattern
+		// Debug: First of check if it is a Frodo.HandleFunc type, might have been altered on first/previous loop
+		// if not check the function if it suffices the HandleFunc type pattern
 		// If it does -- func(http.ResponseWriter, *Request)
 		// then convert it to a Frodo.HandleFunc type
 		// this becomes neat since this what we expect to run
 		// isHandleFunc := false
-		if value, ok := args[1].(func(http.ResponseWriter, *Request)); ok && v.Kind().String() == "func" {
-			makeHandler := func(h HandleFunc) HandleFunc {
-				Log.Debug("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
-				return h
+		if _, ok := args[1].(HandleFunc); !ok {
+			if value, ok := args[1].(func(http.ResponseWriter, *Request)); ok && v.Kind().String() == "func" {
+				makeHandler := func(h HandleFunc) HandleFunc {
+					Log.Debug("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
+					return h
+				}
+				// morph it to it's dynamic data type
+				args[1] = makeHandler(value)
+				// isHandleFunc = true
+			} else {
+				// further checked if it is a Controller
+				if _, isController := args[1].(ControllerInterface); !isController {
+					Log.Fatal("Error: expected handler arguement provided to be an extension of Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
+				}
+				args[1] = args[1].(ControllerInterface)
 			}
-			// morph it to it's dynamic data type
-			args[1] = makeHandler(value)
-			// isHandleFunc = true
-		} else {
-			// further checked if it is a Controller
-			if _, isController := args[1].(ControllerInterface); !isController {
-				Log.Fatal("Error: expected handler arguement provided to be an extension of Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
-			}
-			args[1] = args[1].(ControllerInterface)
 		}
 		handler := args[1]
 		Log.Info("---- %q ----", reflect.ValueOf(args[1]).Type().String())
@@ -179,7 +213,6 @@ func (r *Router) addRoute(verb string, args ...interface{}) {
 			// If it has not been added, add it
 			if !routeExists {
 				r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
-				// fmt.Println(r.paths[httpVerb])
 			}
 		} else {
 			// initialise the path map, if nothing had been added
@@ -194,118 +227,14 @@ func (r *Router) addRoute(verb string, args ...interface{}) {
 		Log.Success("Adding this route[%v] for the METHOD[%s]\n", httpVerb, newRoute)
 	} else {
 		// not enough arguements provided
-		Log.Error("Error: Not enough arguements provided.")
-		defer panic("Ooops!")
-		return
-	}
-}
-
-// Post is a shortcut for router.Add("POST", pattern, handle)
-func (r *Router) Post(pattern string, handle Handle) {
-	r.Handle("POST", pattern, handle)
-}
-
-// Put is a shortcut for router.Add("PUT", pattern, handle)
-func (r *Router) Put(pattern string, handle Handle) {
-	r.Handle("PUT", pattern, handle)
-}
-
-// Patch is a shortcut for router.Add("PATCH", pattern, handle)
-func (r *Router) Patch(pattern string, handle Handle) {
-	r.Handle("PATCH", pattern, handle)
-}
-
-// Delete is a shortcut for router.Add("DELETE", pattern, handle)
-func (r *Router) Delete(pattern string, handle Handle) {
-	r.Handle("DELETE", pattern, handle)
-}
-
-// Head is a shortcut for router.Add("HEAD", pattern, handle)
-func (r *Router) Head(pattern string, handle Handle) {
-	r.Handle("HEAD", pattern, handle)
-}
-
-// Options is a shortcut for router.Add("OPTIONS", pattern, handle)
-func (r *Router) Options(pattern string, handle Handle) {
-	r.Handle("OPTIONS", pattern, handle)
-}
-
-// Match adds the Handle to the provided Methods/HTTPVerbs for a given route
-// EG. GET/POST from /home to have the same Handle
-func (r *Router) Match(httpVerbs Methods, pattern string, handle Handle) {
-	if len(httpVerbs) > 0 {
-		for _, verb := range httpVerbs {
-			r.Handle(strings.ToUpper(verb), pattern, handle)
-		}
-	}
-}
-
-// All method adds the Handle to all Methods/HTTPVerbs for a given route
-func (r *Router) All(pattern string, handle Handle) {
-	methods := Methods{"GET", "POST", "PUT", "DELETE", "PATCH"}
-	r.Match(methods, pattern, handle)
-}
-
-// Handle registers a new request handle with the given path and method.
-// For GET, POST, PUT, PATCH and DELETE requests the respective shortcut
-// functions can be used.
-func (r *Router) Handle(verb, pattern string, handler Handle) {
-	var routeExists bool
-
-	// If it is "/" <-- root directory
-	if li := strings.LastIndex(pattern, "/"); li == 0 && (len(pattern)-1) == li {
-		pattern = "/root"
-	}
-
-	// word := "GET", "POST", "UPDATE"
-	// capitalise the word if it is in lowercase
-	httpVerb := strings.ToUpper(verb)
-
-	// Check to see if there is a Routes Map Array for the given HTTP Verb
-	_, exists := r.paths[httpVerb]
-
-	// check to see if it is a regex pattern given from dev
-	isReg := len(regexp.MustCompile(`\{[\w.-]{2,}\}`).FindAllString(pattern, -1))
-	depth := len(strings.Split(pattern[1:], "/"))
-
-	newRoute := route{
-		pattern: pattern,
-		handler: handler,
-		isRegex: isReg / 2,
-		depth:   depth,
-	}
-	fmt.Printf("Adding this path to the Router.path[%s] :: %v\n", httpVerb, newRoute)
-
-	// If the route map exists r["GET"], r["POST"]...etc`
-	if exists {
-		// loop thru the list of existing routes
-		for _, rt := range r.paths[httpVerb] {
-			// check to see if the route already exists
-			if rt.pattern == pattern {
-				routeExists = true
-			}
-		}
-
-		// If it has not been added, add it
-		if !routeExists {
-			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
-			// fmt.Println(r.paths[httpVerb])
-		}
-	} else {
-		// initialise the path map, if nothing had been added
-		if len(r.paths) == 0 {
-			fmt.Println("Zero routes added, must initialise and then add")
-			r.paths = make(map[string][]route)
-		}
-		// add the 1st path
-		r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
+		Log.Fatal("Error: Not enough arguements provided.")
 	}
 }
 
 // Handler is an adapter which allows the usage of an http.Handler as a
 // request handle.
 func (r *Router) Handler(method, path string, handler http.Handler) {
-	r.Handle(method, path,
+	r.addHandle(method, path,
 		func(w http.ResponseWriter, req *Request) {
 			handler.ServeHTTP(w, req.Request)
 		},
