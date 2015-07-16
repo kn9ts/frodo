@@ -1,8 +1,8 @@
 package Frodo
 
 import (
-	"fmt"
 	"net/http"
+	"time"
 )
 
 // MiddlewareResponseWriter is used to hijack/embed http.ResponseWriter
@@ -10,20 +10,22 @@ import (
 // to trace when a write made and exit
 type MiddlewareResponseWriter struct {
 	http.ResponseWriter
-	written bool
+	written   bool
+	timeStart time.Time
 }
 
 // Write writes data back the client/creates the body
 func (w *MiddlewareResponseWriter) Write(bytes []byte) (int, error) {
 	w.written = true
-	fmt.Printf("\nAn application response was written back: %v\n", w.written)
+	Log.Info("An application response was written back: %v\n", w.written)
+	Log.Info("The request took: %v", time.Now().Sub(w.timeStart))
 	return w.ResponseWriter.Write(bytes)
 }
 
 // WriteHeader is in charge of building the Header file and writing it back to the client
 func (w *MiddlewareResponseWriter) WriteHeader(code int) {
 	w.written = true
-	fmt.Printf("\nHeader was wriiten back: %v\n", w.written)
+	Log.Info("Header has been written: %v", w.written)
 	w.ResponseWriter.WriteHeader(code)
 }
 

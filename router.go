@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // New global var is used to launch the app/routing
@@ -40,6 +41,26 @@ type Methods []string
 type Router struct {
 	paths map[string][]route
 	Middleware
+	NotFoundHandle, MethodNotAllowedHandle, PanicHandle HandleFunc
+}
+
+// HTTP Methods/Verbs allowed
+var MethodsAllowed = Methods{"GET", "POST", "PATCH", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"}
+
+// Little function to convert type "func(http.ResponseWriter, *Request)" to Frodo.HandleFunc
+func makeHandler(h HandleFunc) HandleFunc {
+	Log.Debug("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
+	return h
+}
+
+// Function to check if the the string given is in the array
+func inArray(str string, list []string) bool {
+	for _, v := range list {
+		if v == str {
+			return true
+		}
+	}
+	return false
 }
 
 // Application return a new pointed Router instance
@@ -116,7 +137,7 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 
 		// Check to see if a HandleFunc was provided if not
 		v := reflect.ValueOf(args[1]).Type()
-		Log.Info("==> %s", v)
+		Log.Info("==> Handler provided: %s", v)
 
 		// Debug: First of check if it is a Frodo.HandleFunc type, might have been altered on first/previous loop
 		// if not check the function if it suffices the HandleFunc type pattern
@@ -126,10 +147,6 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 		// isHandleFunc := false
 		if _, ok := args[1].(HandleFunc); !ok {
 			if value, ok := args[1].(func(http.ResponseWriter, *Request)); ok && v.Kind().String() == "func" {
-				makeHandler := func(h HandleFunc) HandleFunc {
-					Log.Debug("converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc")
-					return h
-				}
 				// morph it to it's dynamic data type
 				args[1] = makeHandler(value)
 				// isHandleFunc = true
@@ -142,7 +159,6 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 			}
 		}
 		handler := args[1]
-		Log.Info("---- %q ----", reflect.ValueOf(args[1]).Type().String())
 
 		// if the arguments are 3
 		isString := false
@@ -161,10 +177,10 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 				args[2] = args[2].(Use)
 			}
 			// we now have pattern, handle and info/name
-			Log.Debug("pattern: %s | handle: %q | use/name: %q\n", pattern, reflect.ValueOf(args[1]).Type(), reflect.ValueOf(args[2]).Type())
+			Log.Debug("==> pattern: \"%s\" | handle: %q | use/name: %q\n", pattern, reflect.ValueOf(args[1]).Type(), reflect.ValueOf(args[2]).Type())
 		} else {
 			// only pattern and handler are given
-			Log.Debug("pattern: %s | handle: %q\n", pattern, reflect.ValueOf(args[1]).Type())
+			Log.Debug("==> pattern: \"%s\" | handle: %q\n", pattern, reflect.ValueOf(args[1]).Type())
 		}
 
 		var routeExists bool
@@ -194,7 +210,7 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 		// Add if the name or  meta data of route, if they were given
 		if len(args) > 2 {
 			if isString {
-				newRoute.Name = args[2].(string)
+				newRoute.Use.Name = args[2].(string)
 			} else {
 				newRoute.Use = args[2].(Use)
 			}
@@ -224,7 +240,7 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
 		}
 
-		Log.Success("Adding this route[%v] for the METHOD[%s]\n", httpVerb, newRoute)
+		Log.Success("==> Adding route \"%s\" to METHOD map [%s]\n", pattern, httpVerb)
 	} else {
 		// not enough arguements provided
 		Log.Fatal("Error: Not enough arguements provided.")
@@ -247,10 +263,70 @@ func (r *Router) HandlerFunc(method, path string, handler http.HandlerFunc) {
 	r.Handler(method, path, handler)
 }
 
+// NotFound can be used to define custom routes to handle NotFound routes
+func (r *Router) NotFound(handler HandleFunc) {
+	r.NotFoundHandle = handler
+}
+
+// BadMethod can be used to define custom routes to handle Methods that are not allowed
+func (r *Router) BadMethod(handler HandleFunc) {
+	r.MethodNotAllowedHandle = handler
+}
+
+// ServerError can be used to define custom routes to handle OnServerError routes
+func (r *Router) ServerError(handler HandleFunc) {
+	r.PanicHandle = handler
+}
+
+// On500 is shortform for ServerError
+func (r *Router) On500(handler HandleFunc) {
+	r.ServerError(handler)
+}
+
+// On404 is shortform for NotFound
+func (r *Router) On404(handler HandleFunc) {
+	r.NotFound(handler)
+}
+
 // ServeHTTP will receive all requests, and process them for our router
 // By using it we are implementing the http.Handler and thus can use our own ways to
 // handle incoming requests and process them
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	// Start timing request
+	timer := time.Now()
+
+	// Wrap the supplied http.ResponseWriter, we want to know when
+	// a write has been done by the middleware or controller and exit immediately
+	FrodoWritter := &MiddlewareResponseWriter{
+		// Since http.ResponseWriter is embedded you can access it
+		ResponseWriter: w,
+		timeStart:      timer,
+	}
+	FrodoRequest := &Request{
+		Request: req,
+		// params, form - map[string]string,
+		// files []*UploadFile
+	}
+
+	// initialise parameter map collector
+	FrodoRequest.params = make(map[string]string)
+
+	// ---------- 500: Internal Server Error -----------
+	// If a panic/error takes place while process, recover and run PanicHandle if defined
+	defer func() {
+		if err := recover(); err != nil {
+
+			if r.PanicHandle != nil {
+				r.PanicHandle(FrodoWritter, FrodoRequest)
+				return
+			}
+
+			// If it doesnt, use original for fallback
+			http.Error(FrodoWritter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+	}()
+
 	// Get the URL Path
 	requestURL := req.URL.String()
 
@@ -274,57 +350,58 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	fmt.Printf("Requested URL parts -- %q, %d \n", requestedURLParts, len(requestedURLParts))
 	// fmt.Println(requestedURLParts[len(requestedURLParts)-1] == "/root")
 
+	// Check if the method the request was made with is alloed
+	if !inArray(strings.ToUpper(req.Method), MethodsAllowed) {
+		// Nop! Method not allowed
+		if r.MethodNotAllowedHandle != nil {
+			r.MethodNotAllowedHandle(FrodoWritter, FrodoRequest)
+			return
+		}
+
+		// Or panic, if no handle is provided
+		panic("Error: METHOD Request is not allowed")
+	}
+
 	// Get list of routes related with the method of the requested path
 	// returns a []route array
-	RelatedRoutes := r.paths[strings.ToUpper(req.Method)]
-	// fmt.Printf("PATH ROUTES: %v \n", RelatedRoutes)
+	requestedPathsInMethod := r.paths[strings.ToUpper(req.Method)]
 
 	// Now loop through all the routes provided in that Method
-	for _, route := range RelatedRoutes {
+	for _, route := range requestedPathsInMethod {
 		// By default on start it is FALSE
 		aPossibleRouteMatchFound := false
 
 		// Split and compare the depth of the route requested
-		patternSplit := strings.Split(route.pattern[1:], "/")
-		fmt.Printf("Request comparisons: %q <<>> %q \n", patternSplit, requestedURLParts)
+		routePatternParts := strings.Split(route.pattern[1:], "/")
 
 		//  If the depth match, then they might be a possible match
 		if route.depth == len(requestedURLParts) {
 			// For now it seems it is true
 			aPossibleRouteMatchFound = true
-
-			// Collect the params in the Params array
-			requestParams := &Request{
-				Request: req,
-				// params, form map[string]string,
-				// files []*UploadFile
-			}
+			fmt.Printf("Request comparisons: %q <<>> %q \n", routePatternParts, requestedURLParts)
 
 			// If a possible match was acquired, step 2:
 			// loop thru each part of the route pattern matching them, if one fails then it's a no match
 			// each part is seperated with "/"
 			for index, portion := range requestedURLParts {
-				// check to see route part is a pattern eg. {param}
-				isPattern, _ := regexp.MatchString(`\{[\w.-]{2,}\}`, patternSplit[index])
+				// check to see route part is a pattern eg. /{param}/
+				isPattern, _ := regexp.MatchString(`\{[\w.-]{2,}\}`, routePatternParts[index])
+				fmt.Printf("Comparing: [%q] <<- | ->> [%q] \n", routePatternParts[index], portion)
 
-				// if the route part value is actually a regex to match
+				// if the route part passes the {param} match
 				if isPattern {
-					fmt.Printf("Trying to match the pattern: %q <-|-> part: %q", patternSplit[index], portion)
-
-					// Does it pass the {param} match, remove curly brackets
+					// See if the portion matches the request in the route param
+					// eg. user/{param} === "user/eugene"
 					routePartMatchesRegexParam, _ := regexp.MatchString(`[\w.-]{2,}`, portion)
 
-					// If it does pass the match test
+					// If the portion does pass the match test
 					if routePartMatchesRegexParam {
 						// Replace all curly brackets with nothing to get the key value
-						key := regexp.MustCompile(`(\{|\})`).ReplaceAllString(patternSplit[index], "")
+						key := regexp.MustCompile(`(\{|\})`).ReplaceAllString(routePatternParts[index], "")
 						// Add it to the parameters
-						if requestParams.params == nil {
-							requestParams.params = make(map[string]string)
-						}
-
 						if key != "" {
-							requestParams.params[key] = portion
+							// Collect the params in the Params array
+							FrodoRequest.params[key] = portion
 						}
 						// Keep it true
 						aPossibleRouteMatchFound = true
@@ -333,98 +410,140 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				} else {
 					// if there is no regex match, try match them side by side as strings
 					// If no match was found, then we are wasting time
-					if patternSplit[index] != portion {
+					if portion != routePatternParts[index] {
 						// If no match here, falsify & break the search nothing found
 						aPossibleRouteMatchFound = false
-						fmt.Printf("\n-------- BREAK: No match found at all. ---------\n\n")
-						break
+						// BREAK: No match found at all.
+						fmt.Printf("Did they match", aPossibleRouteMatchFound)
 					}
 				}
 			}
+
+			// Since FrodoWritter it's a pointer, it's just being passed
+			// FrodoWritter := FrodoWritter
 
 			// After checking the portions if aPossibleRouteMatchFound remains true,
 			// then all the portions matched, thus this route suffices the match
 			// thus grab it's handler and run it
 			if aPossibleRouteMatchFound {
-				// fmt.Printf("\nParams found: %q\n", requestParams)
-
-				// Wrap the supplied http.ResponseWriter, we want to know when
-				// a write has been done by the middleware or controller and exit immediately
-				MiddlewareWriter := &MiddlewareResponseWriter{
-					// Since http.ResponseWriter is embedded you can access it
-					ResponseWriter: w,
-				}
-
 				// Get Application's "Before" Middleware and run them
 				if len(r.BeforeMiddleware) > 0 {
-					for ix, _ := range r.BeforeMiddleware {
+					for ix, beforeFilter := range r.BeforeMiddleware {
 						// Pass it as the ResponseWriter instead
-						// beforeFilter(MiddlewareWriter, requestParams)
-						fmt.Printf("\nBEFORE Middleware No. %d running: Written - %s | Request: - %v \n", ix, req.Method, MiddlewareWriter.written)
+						beforeFilter(FrodoWritter, FrodoRequest)
+						fmt.Printf("\nBEFORE Middleware No. %d running: Written - %s | Request: - %v \n", ix, req.Method, FrodoWritter.written)
 
 						// If there was a write, stop processing
-						if MiddlewareWriter.written {
-							fmt.Printf("\nEXITING: A write was made by Middleware Number: %d | %s \n", ix, req.Method)
+						if FrodoWritter.written {
 							// End the connection
+							fmt.Printf("has written ===>", FrodoWritter.written)
 							return
 						}
 					}
 				} else {
 					// No before middleware added
-					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
+					Log.Debug("--- NO middleware: %q ---\n", r.BeforeMiddleware)
 				}
 
-				// If there is a middleware that should be implemented to the route
+				// If there is a filter middleware that should be implemented to the route
 				// Run it before the controller, before the controller provided by the dev
 				if len(r.FilterMiddleware) > 0 {
 					// loop thru the filters to find it
 					for _, routeFilter := range r.FilterMiddleware {
-						// Try find any route filter that matches the route pattern and run them
-						if routeFilter.Name == route.pattern {
-							// routeFilter.Handle(MiddlewareWriter, requestParams)
-							fmt.Printf("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, MiddlewareWriter.written)
-							// If there was a write, stop processing
-							if MiddlewareWriter.written {
-								fmt.Printf("\nEXITING: A write was made by Middleware Name: %d | %s \n", routeFilter.Name, req.Method)
-								// End the connection
-								return
+						// Check if filter was stored with route pattern as reference
+						if routeFilter.IsRoute {
+							// Try find any route filter that matches the route pattern and run them
+							if routeFilter.Name == route.pattern {
+								// If a match is found, run the middleware
+								routeFilter.Handle(FrodoWritter, FrodoRequest)
+								Log.Info("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, FrodoWritter.written)
+
 							}
-							// a match was found, break out
-							break
+						} else {
+							// TODO: Dev should be able to pass more than one filter
+							// eg. ==> Frodo.Use{...Filter: Frodo.Filters{"cors", "csrf", "auth"}}
+							// if not, probaby was stored with the name of the route
+							if routeFilter.Name == route.Use.Filter {
+								// If a match is found, run the middleware
+								routeFilter.Handle(FrodoWritter, FrodoRequest)
+								Log.Info("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, FrodoWritter.written)
+							}
+						}
+
+						// If there was a write, stop processing
+						if FrodoWritter.written {
+							Log.Alert("\nEXITING: A write was made by Middleware Name: %d | %s \n", routeFilter.Name, req.Method)
+							// End the connection
+							return
 						}
 					}
-
 				} else {
-					fmt.Printf("\n--- NO middleware: %q ---\n", r.BeforeMiddleware)
+					fmt.Printf("--- NO Application Filters: %q ---\n", r.BeforeMiddleware)
 				}
 
-				// Finally run the dev's controller provided, and exit (for now though, after middleware to be added)
+				// Last lap:
+				// 1st check if the route handler is HandleFunc
+				if handle, ok := route.handler.(HandleFunc); ok {
+					// is Handler, just call it then
+					handle(FrodoWritter, FrodoRequest)
+				} else {
+					// if not, then is it an implementation of ControllerInterface
+					if ctrl, ok := route.handler.(ControllerInterface); ok {
+						// Yes! it is.
+						// Ok! check if a method was specified to run
+						if name := route.Use.Method; name != "" {
+							// if so check that Method exists
+							v := reflect.ValueOf(ctrl)
 
-				/*
+							// check for the method by it's name
+							fn := v.MethodByName(name)
 
-				   ------- RESULTS: -----
+							// if a Method was found, not a Zero value
+							if fn != (reflect.Value{}) {
+								// Then convert it back to HandleFunc
+								// You have to know which type it is or are converting to
+								if value, ok := fn.Interface().(func(http.ResponseWriter, *Request)); ok && fn.Kind().String() == "func" {
+									// morph it to it's dynamic data type, and function
+									// Then run it
+									makeHandler(value)(FrodoWritter, FrodoRequest)
+								}
+							} else {
+								// Method given in use does not exist
+								Log.Error("%s undefined (The Controller has no field or method %s)", name)
+							}
+						} else {
+							// Nothing like so were found, run internal server error: 500
+							Log.Warn("No Method specified to run in Controller, defaulting to Index method")
+							ctrl.Index(FrodoWritter, FrodoRequest)
+							return
+						}
+					} else {
+						// Nothing like so were found, run internal server error: 500
+						Log.Error("No Handle or Controller exists to handle the route.")
+						return
+					}
+				}
 
-				   Value:  <*Frodo.Controller Value>
-				   Type:  *Frodo.Controller
-				   Kind:  ptr
-				   Interface:  &{Get }
-				   Pointer:  833357997216
-				   Elem:  <Frodo.Controller Value>
-
-				*/
-				v := reflect.ValueOf(route.handler)
-				fmt.Println("Type: ", v.Type().String())
-				// route.handler(w, requestParams)
-
+				// If there was a write, stop processing
 				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
-				if MiddlewareWriter.written {
+				if FrodoWritter.written {
 					// End the connection
 					return
 				}
-				break
 			}
 		}
 	}
+
+	// ---------- 404: No Match Found -----------
+	// no match was found, respond with a 404
+	if r.NotFoundHandle != nil {
+		r.NotFoundHandle(FrodoWritter, FrodoRequest)
+		return
+	}
+
+	// If system defualt if CustomHandle not Filter ||
+	http.Error(FrodoWritter, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
 }
 
 // Serve deploys the application

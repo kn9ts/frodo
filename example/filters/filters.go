@@ -24,11 +24,12 @@ func init() {
 		}
 	})
 
-	// Adding routin filters, this applies now to "/page/{id}" route
-	MiddleWare.Filter("/page/{id}", func(w http.ResponseWriter, r *Frodo.Request) {
+	// Adding routin filters, this applies now to any route that uses it
+	// eg. App.Get("/user", &controller.Users{}, Frodo.Use{Method: "", Name: "", Filter: "auth"})
+	MiddleWare.Filter("auth", func(w http.ResponseWriter, r *Frodo.Request) {
 		if r.GetParam("id") != "" {
-			r.Method = "CHANGED_BY_FILTER_MIDDLEWARE"
+			r.Method = "CHANGED_BY_AUTH_FILTER_MIDDLEWARE"
 		}
-	}, false)
+	})
 
 }

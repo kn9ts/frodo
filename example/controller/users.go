@@ -10,7 +10,7 @@ type Users struct {
 	Frodo.Controller
 }
 
-// Create is overriding and defining your Create method
-func (u *Users) Create(w http.ResponseWriter, r *Frodo.Request) {
+// Show is overriding and defining user's Show method
+func (u *Users) Show(w http.ResponseWriter, r *Frodo.Request) {
 	w.Write([]byte("Hello a list of users will be here"))
 }

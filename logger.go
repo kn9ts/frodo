@@ -32,7 +32,9 @@ func init() {
 func (console *Logger) Initialise() {
 	// For now collect all the buffers on to a buffer memory
 	buffer := new(bytes.Buffer)
-	console.LogFile = log.New(buffer, "Frodo: ", log.Ldate|log.Ltime|log.Lshortfile)
+	console.LogFile = log.New(buffer, "[Frodo] ", log.Ldate|log.Ltime|log.Lshortfile)
+	log.SetPrefix("[Frodo] ")
+	// log.SetFlags(log.Lshortfile)
 }
 
 // Info can be used to log informative information of the application
@@ -75,6 +77,7 @@ func (console *Logger) Alert(format string, args ...interface{}) {
 func (console *Logger) Critical(format string, args ...interface{}) {
 	color.Set(color.BgRed, color.FgWhite, color.Bold)
 	defer color.Unset()
+	log.Printf(format, args...)
 	console.LogFile.Fatalf(format, args...)
 }
 
@@ -82,6 +85,7 @@ func (console *Logger) Critical(format string, args ...interface{}) {
 func (console *Logger) Fatal(format string, args ...interface{}) {
 	color.Set(color.BgRed, color.FgWhite, color.Bold)
 	defer color.Unset()
+	log.Printf(format, args...)
 	console.LogFile.Fatalf(format, args...)
 }
 
@@ -94,8 +98,8 @@ func (console *Logger) log(colorAttr color.Attribute, isBold bool, format string
 	}
 
 	// I want it log both into the file and on the console
-	log.Printf(format, args...)
 	console.LogFile.Printf(format, args...)
+	log.Printf(format, args...)
 }
 
 // WriteToFile prompts all logs to be written to a file
@@ -118,14 +122,13 @@ func (console *Logger) WriteToFile(fl ...interface{}) (*log.Logger, error) {
 
 	dir, err := os.Stat(console.FilePath)
 	if err != nil {
-		Log.Error("Error: Directory %s does not exist.", console.FilePath)
+		console.Fatal("Error: Directory %s does not exist.", console.FilePath)
 	}
 
 	if !dir.IsDir() {
-		Log.Fatal("Error: %s is not a directory/folder.", console.FilePath)
+		console.Fatal("Error: %s is not a directory/folder.", console.FilePath)
 	}
-
-	Log.Info("Debug information will be logged at: %s/%s", dir.Name(), console.FileName)
+	console.Info("Debug information will be logged at: %s/%s", dir.Name(), console.FileName)
 
 	// 1st check to see if the path and filename provided exists
 	// create a new file if none exists.

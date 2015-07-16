@@ -20,12 +20,12 @@ func main() {
 	})
 
 	App.Get("/me", &controller.Users{})
-	App.Get("/users", &controller.Users{}, Frodo.Use{Method: "Create", Name: "users", Before: "auth", After: "token"})
+	App.Get("/users", &controller.Users{}, Frodo.Use{Method: "Show", Name: "users", Filter: "auth"})
 	App.Post("/profile", &controller.Home{}, Frodo.Use{Method: "Index", Name: "profile"})
 
 	App.Get("/settings", func(w http.ResponseWriter, r *Frodo.Request) {
 		w.Write([]byte("Hello Setting"))
-	}, Frodo.Use{Method: "Index"})
+	}, Frodo.Use{Method: "", Name: "settings"})
 
 	App.Get("/page/{id}", func(w http.ResponseWriter, r *Frodo.Request) {
 		w.Write([]byte("Hello page here, the ID passed is " + r.Param("id"))) // send data to client side
@@ -41,8 +41,8 @@ func main() {
 
 	App.Post("/{name}", func(w http.ResponseWriter, r *Frodo.Request) {
 		// send data to client side
-		// w.Write([]byte("Hello, " + param.Get("name") + "! This is your profile page."))
-		Reponse.JSON(w, http.StatusOK, r)
+		w.Write([]byte("Hello, " + r.Param("name") + "! This is your profile page."))
+		// Reponse.JSON(w, http.StatusOK, r)
 	})
 
 	Frodo.Log.FilePath = "./"

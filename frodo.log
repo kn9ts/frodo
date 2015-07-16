@@ -1,3 +1,289 @@
 Frodo: 2015/07/15 16:42:15 router.go:489: Server deployed at: 3000
 Frodo: 2015/07/15 16:44:09 router.go:489: Server deployed at: 3000
 Frodo: 2015/07/15 16:45:07 router.go:489: Server deployed at: 3000
+Frodo: 2015/07/15 22:14:06 logger.go:88: ------- File Logging activated!! -------
+Frodo: 2015/07/15 22:15:22 logger.go:88: ------- File Logging activated!! -------
+Frodo: 2015/07/15 22:16:49 logger.go:88: ------- File Logging activated!! -------
+Frodo: 2015/07/15 22:20:33 logger.go:88: ------- File Logging activated!! -------
+Frodo: 2015/07/15 22:31:51 logger.go:106: ------- File Logging activated!! -------
+Frodo: 2015/07/15 22:43:47 logger.go:112: ------- File Logging activated!! -------
+Frodo: 2015/07/15 23:34:56 logger.go:117: ------- File Logging activated!! -------
+Frodo: 2015/07/15 23:36:23 logger.go:117: ------- File Logging activated!! -------
+Frodo: 2015/07/16 00:27:38 logger.go:117: ------- File Logging activated!! -------
+Frodo: 2015/07/16 00:28:45 logger.go:117: ------- File Logging activated!! -------
+Frodo: 2015/07/16 00:29:36 logger.go:117: ------- File Logging activated!! -------
+Frodo: 2015/07/16 08:58:50 logger.go:117: ------- File Logging activated!! -------
+Frodo: 2015/07/16 08:59:51 logger.go:117: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:03:22 logger.go:121: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:04:28 logger.go:123: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:04:40 logger.go:123: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:04:53 logger.go:123: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:05:17 logger.go:123: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:05:41 logger.go:123: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:16:05 logger.go:98: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:16:05 logger.go:98: ==> func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 09:16:05 logger.go:98: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 09:16:05 logger.go:98: ---- "Frodo.HandleFunc" ----
+Frodo: 2015/07/16 09:16:05 logger.go:98: pattern: / | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 09:16:05 logger.go:98: Zero routes added, must initialise and then add
+Frodo: 2015/07/16 09:16:05 logger.go:98: Adding this route[GET] for the METHOD[{/root %!s(Frodo.HandleFunc=0x2a90) %!s(int=0) %!s(int=1) {    map[]}}]
+Frodo: 2015/07/16 09:16:05 logger.go:98: ==> func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 09:16:05 logger.go:98: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 09:16:05 logger.go:98: ---- "Frodo.HandleFunc" ----
+Frodo: 2015/07/16 09:16:05 logger.go:98: pattern: /settings | handle: "Frodo.HandleFunc" | use/name: "Frodo.Use"
+Frodo: 2015/07/16 09:16:05 logger.go:98: Adding this route[GET] for the METHOD[{/settings %!s(Frodo.HandleFunc=0x2b00) %!s(int=0) %!s(int=1) {Index    map[]}}]
+Frodo: 2015/07/16 09:16:05 logger.go:98: ==> func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 09:16:05 logger.go:98: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 09:16:05 logger.go:98: ---- "Frodo.HandleFunc" ----
+Frodo: 2015/07/16 09:16:05 logger.go:98: pattern: /payments | handle: "Frodo.HandleFunc" | use/name: "string"
+Frodo: 2015/07/16 09:16:05 logger.go:98: Adding this route[GET] for the METHOD[{/payments %!s(Frodo.HandleFunc=0x2b70) %!s(int=0) %!s(int=1) { payments   map[]}}]
+Frodo: 2015/07/16 09:16:05 logger.go:98: ==> *controller.Users
+Frodo: 2015/07/16 09:16:05 logger.go:98: ---- "*controller.Users" ----
+Frodo: 2015/07/16 09:16:05 logger.go:98: pattern: /me | handle: "*controller.Users"
+Frodo: 2015/07/16 09:16:05 logger.go:98: Adding this route[GET] for the METHOD[{/me %!s(*controller.Users=&{{ }}) %!s(int=0) %!s(int=1) {    map[]}}]
+Frodo: 2015/07/16 09:16:05 logger.go:98: ==> *controller.Users
+Frodo: 2015/07/16 09:16:05 logger.go:98: ---- "*controller.Users" ----
+Frodo: 2015/07/16 09:16:05 logger.go:98: pattern: /users | handle: "*controller.Users" | use/name: "Frodo.Use"
+Frodo: 2015/07/16 09:16:05 logger.go:98: Adding this route[GET] for the METHOD[{/users %!s(*controller.Users=&{{ }}) %!s(int=0) %!s(int=1) {Create users auth token map[]}}]
+Frodo: 2015/07/16 09:16:05 logger.go:98: ==> *controller.Home
+Frodo: 2015/07/16 09:16:05 logger.go:98: ---- "*controller.Home" ----
+Frodo: 2015/07/16 09:16:05 logger.go:98: pattern: /profile | handle: "*controller.Home" | use/name: "Frodo.Use"
+Frodo: 2015/07/16 09:16:05 logger.go:98: Adding this route[GET] for the METHOD[{/profile %!s(*controller.Home=&{{ }}) %!s(int=0) %!s(int=1) {Index profile   map[]}}]
+Frodo: 2015/07/16 09:43:00 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:50:04 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:50:19 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 09:52:17 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:09:34 logger.go:99: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:12:19 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:12:31 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:13:26 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:18:38 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:19:46 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:20:54 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:23:01 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:23:11 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:23:56 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:26:19 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:26:53 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:32:32 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 11:32:50 logger.go:100: 
+-------- BREAK: No match found at all. ---------
+
+Frodo: 2015/07/16 11:32:50 logger.go:100: 
+-------- BREAK: No match found at all. ---------
+
+Frodo: 2015/07/16 11:32:50 logger.go:100: 
+-------- BREAK: No match found at all. ---------
+
+Frodo: 2015/07/16 11:32:50 logger.go:100: 
+BEFORE Middleware No. 0 running: Written - GET | Request: - false 
+Frodo: 2015/07/16 12:02:53 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:38:55 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:41:22 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:41:28 logger.go:100: No Handle or Controller exists.
+Frodo: 2015/07/16 13:43:16 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:43:23 logger.go:100: No Method specified to run in Controller.
+Frodo: 2015/07/16 13:44:19 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:44:25 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 13:54:14 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:54:18 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 13:55:04 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:55:09 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 13:58:35 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 13:58:40 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 14:00:09 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 14:00:14 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 14:01:12 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 14:01:23 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 14:02:08 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 14:02:13 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 14:02:49 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 14:02:55 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 14:03:24 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 14:03:28 logger.go:100: No Method specified to run in Controller, defaulting to Index method
+Frodo: 2015/07/16 14:04:14 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 14:07:48 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 15:15:38 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 15:15:46 logger.go:100: 
+Header has been written: true
+Frodo: 2015/07/16 15:15:46 logger.go:100: 
+An application response was written back: true
+Frodo: 2015/07/16 15:15:46 logger.go:100: 
+The request took: 515.018µs
+Frodo: 2015/07/16 15:17:16 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 15:17:22 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 15:17:22 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 15:17:22 logger.go:100: The request took: 643.761µs
+Frodo: 2015/07/16 16:11:31 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 16:11:38 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:11:38 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:11:38 logger.go:100: The request took: 818.028µs
+Frodo: 2015/07/16 16:11:40 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:11:40 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:11:40 logger.go:100: The request took: 258.758µs
+Frodo: 2015/07/16 16:11:40 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:11:40 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:11:40 logger.go:100: The request took: 354.574µs
+Frodo: 2015/07/16 16:11:40 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:11:40 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:11:40 logger.go:100: The request took: 462.901µs
+Frodo: 2015/07/16 16:11:43 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:11:43 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:11:43 logger.go:100: The request took: 230.46µs
+Frodo: 2015/07/16 16:11:43 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:11:43 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:11:43 logger.go:100: The request took: 311.297µs
+Frodo: 2015/07/16 16:11:43 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:11:43 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:11:43 logger.go:100: The request took: 382.028µs
+Frodo: 2015/07/16 16:37:41 logger.go:100: ------- File Logging activated!! -------
+Frodo: 2015/07/16 16:37:46 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:37:46 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:37:46 logger.go:100: The request took: 282.034µs
+Frodo: 2015/07/16 16:37:46 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:37:46 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:37:46 logger.go:100: The request took: 414.372µs
+Frodo: 2015/07/16 16:37:46 logger.go:100: Header has been written: true
+Frodo: 2015/07/16 16:37:46 logger.go:100: An application response was written back: true
+Frodo: 2015/07/16 16:37:46 logger.go:100: The request took: 512.587µs
+Frodo: 2015/07/16 16:45:05 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 16:45:13 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 16:45:13 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 16:45:13 logger.go:101: The request took: 224.043µs
+Frodo: 2015/07/16 16:45:13 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 16:45:13 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 16:45:13 logger.go:101: The request took: 357.292µs
+Frodo: 2015/07/16 16:45:13 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 16:45:13 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 16:45:13 logger.go:101: The request took: 469.51µs
+Frodo: 2015/07/16 16:47:45 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 16:47:48 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 16:47:48 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 16:47:48 logger.go:101: The request took: 234.595µs
+Frodo: 2015/07/16 16:47:48 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 16:47:48 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 16:47:48 logger.go:101: The request took: 330.009µs
+Frodo: 2015/07/16 16:47:48 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 16:47:48 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 16:47:48 logger.go:101: The request took: 415.203µs
+Frodo: 2015/07/16 17:10:47 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:10:53 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:10:53 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:10:53 logger.go:101: The request took: 293.352µs
+Frodo: 2015/07/16 17:11:21 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:11:21 logger.go:101: The request took: 385.168µs
+Frodo: 2015/07/16 17:11:36 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:11:36 logger.go:101: The request took: 530.996µs
+Frodo: 2015/07/16 17:13:08 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:13:12 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:13:12 logger.go:101: The request took: 272.031µs
+Frodo: 2015/07/16 17:16:38 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:16:38 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:16:38 logger.go:101: The request took: 665.179µs
+Frodo: 2015/07/16 17:17:03 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:17:03 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:17:03 logger.go:101: The request took: 931.082µs
+Frodo: 2015/07/16 17:17:08 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:17:08 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:17:08 logger.go:101: The request took: 235.55µs
+Frodo: 2015/07/16 17:17:38 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:17:38 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:17:38 logger.go:101: The request took: 877.337µs
+Frodo: 2015/07/16 17:18:07 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:18:07 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:18:07 logger.go:101: The request took: 550.503µs
+Frodo: 2015/07/16 17:19:48 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:19:52 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:19:52 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:19:52 logger.go:101: The request took: 304.962µs
+Frodo: 2015/07/16 17:21:06 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:21:39 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:21:47 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:21:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:21:47 logger.go:101: The request took: 551.64µs
+Frodo: 2015/07/16 17:22:53 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:22:53 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:22:53 logger.go:101: The request took: 649.198µs
+Frodo: 2015/07/16 17:23:07 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:23:07 logger.go:89: Error: server failed to initialise: listen tcp :3102: bind: address already in use
+Frodo: 2015/07/16 17:23:28 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:23:28 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:23:28 logger.go:101: The request took: 347.908µs
+Frodo: 2015/07/16 17:23:29 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:23:29 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:23:29 logger.go:101: The request took: 231.594µs
+Frodo: 2015/07/16 17:23:37 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:23:37 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:23:37 logger.go:101: The request took: 236.929µs
+Frodo: 2015/07/16 17:24:28 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:24:28 logger.go:89: Error: server failed to initialise: listen tcp :3102: bind: address already in use
+Frodo: 2015/07/16 17:25:00 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:25:00 logger.go:89: Error: server failed to initialise: listen tcp :3102: bind: address already in use
+Frodo: 2015/07/16 17:25:07 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:25:07 logger.go:89: Error: server failed to initialise: listen tcp :3102: bind: address already in use
+Frodo: 2015/07/16 17:26:06 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:26:06 logger.go:89: Error: server failed to initialise: listen tcp :3102: bind: address already in use
+Frodo: 2015/07/16 17:26:27 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:26:27 logger.go:101: The request took: 259.698µs
+Frodo: 2015/07/16 17:26:45 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:29:19 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:29:22 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:29:22 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:29:22 logger.go:101: The request took: 445.213µs
+Frodo: 2015/07/16 17:30:51 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:30:51 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:30:51 logger.go:101: The request took: 287.406µs
+Frodo: 2015/07/16 17:32:38 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:33:05 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:33:05 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:33:05 logger.go:101: The request took: 444.03µs
+Frodo: 2015/07/16 17:38:34 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:38:39 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:38:39 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:38:39 logger.go:101: The request took: 500.18µs
+Frodo: 2015/07/16 17:44:47 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:44:51 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:44:51 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:44:51 logger.go:101: The request took: 268.292µs
+Frodo: 2015/07/16 17:45:40 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 17:45:44 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 17:45:44 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 17:45:44 logger.go:101: The request took: 231.756µs
+Frodo: 2015/07/16 18:16:39 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 18:17:08 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:17:08 logger.go:101: The request took: 965.6µs
+Frodo: 2015/07/16 18:17:17 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 18:17:17 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:17:17 logger.go:101: The request took: 300.404µs
+Frodo: 2015/07/16 18:18:04 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 18:18:04 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:18:04 logger.go:101: The request took: 581.069µs
+Frodo: 2015/07/16 18:18:19 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 18:18:19 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:18:19 logger.go:101: The request took: 252.075µs
+Frodo: 2015/07/16 18:18:34 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:18:34 logger.go:101: The request took: 300.813µs
+Frodo: 2015/07/16 18:18:44 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 18:18:44 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:18:44 logger.go:101: The request took: 2.938313ms
+Frodo: 2015/07/16 18:20:38 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 18:20:38 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:20:38 logger.go:101: The request took: 1.934505ms
+Frodo: 2015/07/16 18:20:55 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 18:20:55 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:20:55 logger.go:101: The request took: 823.452µs
+Frodo: 2015/07/16 18:21:34 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:21:34 logger.go:101: The request took: 869.385µs
+Frodo: 2015/07/16 18:21:38 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:21:38 logger.go:101: The request took: 182.42µs
+Frodo: 2015/07/16 18:22:01 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 18:22:01 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:22:01 logger.go:101: The request took: 1.252595ms
+Frodo: 2015/07/16 18:22:47 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 18:22:53 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:22:53 logger.go:101: The request took: 687.637µs
+Frodo: 2015/07/16 18:24:24 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 18:24:24 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:24:24 logger.go:101: The request took: 702.324µs
+Frodo: 2015/07/16 18:25:52 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 18:25:52 logger.go:101: The request took: 861.386µs
