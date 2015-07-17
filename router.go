@@ -10,9 +10,6 @@ import (
 	"time"
 )
 
-// New global var is used to launch the app/routing
-var New *Router
-
 // Handle should be able to carry a HandleFunc or a Controller
 // thus only both can satisfy an interface
 type Handle interface{}
@@ -62,9 +59,15 @@ func inArray(str string, list []string) bool {
 	return false
 }
 
+// New short method to create a new app instance
+func New() *Router {
+	var New = new(Router)
+	return New
+}
+
 // Application return a new pointed Router instance
 func (r *Router) Application() *Router {
-	New = new(Router)
+	var New = new(Router)
 	return New
 }
 

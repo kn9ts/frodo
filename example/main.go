@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// Get an app instance by initializing the app
-	App := Frodo.New.Application()
+	App := Frodo.New()
 	Reponse := render.New(render.Options{})
 
 	// route, handler/controller, which method for controller, name of route if you plan to give it one
