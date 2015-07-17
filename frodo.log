@@ -794,3 +794,13 @@ Frodo: 2015/07/17 14:09:47 logger.go:101: FILTER Middleware [auth] running: Requ
 Frodo: 2015/07/17 14:09:47 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
 Frodo: 2015/07/17 14:09:47 logger.go:101: An application response was written back: true
 Frodo: 2015/07/17 14:09:47 logger.go:101: The request took: 379.338µs
+Frodo: 2015/07/17 14:13:02 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 14:13:02 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 14:13:02 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:13:02 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 14:13:02 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 14:13:08 logger.go:101: BEFORE Middleware No. 0 running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:13:08 logger.go:101: FILTER Middleware [auth] running: Request Method - CHANGED_BY_AUTH_FILTER_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:13:08 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:13:08 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 14:13:08 logger.go:101: The request took: 569.592µs

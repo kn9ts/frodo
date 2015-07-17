@@ -491,7 +491,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 							// TODO: Dev should be able to pass more than one filter
 							// eg. ==> Frodo.Use{...Filter: Frodo.Filters{"cors", "csrf", "auth"}}
 							// if not, the route Filter probably has the name of middlware to run
-							if routeFilter.Name == route.Use.Filter {
+							if routeFilter.Name == route.Use.Filter || routeFilter.Name == route.Use.Name {
 								// If a match is found, run the middleware
 								routeFilter.Handle(FrodoWritter, FrodoRequest)
 								Log.Info("FILTER Middleware [%s] running: Request Method - %s | Written back: - %v \n", routeFilter.Name, FrodoRequest.Method, FrodoWritter.written)
