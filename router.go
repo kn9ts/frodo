@@ -459,7 +459,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					for ix, beforeFilter := range r.BeforeMiddleware {
 						// Pass it as the ResponseWriter instead
 						beforeFilter(FrodoWritter, FrodoRequest)
-						fmt.Printf("\nBEFORE Middleware No. %d running: Written - %s | Request: - %v \n", ix, req.Method, FrodoWritter.written)
+						Log.Info("BEFORE Middleware No. %d running: Request Method - %s | Written back: - %v \n", ix, FrodoRequest.Method, FrodoWritter.written)
 
 						// If there was a write, stop processing
 						if FrodoWritter.written {
@@ -484,23 +484,23 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 							if routeFilter.Name == route.pattern {
 								// If a match is found, run the middleware
 								routeFilter.Handle(FrodoWritter, FrodoRequest)
-								Log.Info("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, FrodoWritter.written)
+								Log.Info("FILTER Middleware [%s] running: Request Method - %s | Written back: - %v \n", routeFilter.Name, FrodoRequest.Method, FrodoWritter.written)
 
 							}
 						} else {
 							// TODO: Dev should be able to pass more than one filter
 							// eg. ==> Frodo.Use{...Filter: Frodo.Filters{"cors", "csrf", "auth"}}
-							// if not, probaby was stored with the name of the route
+							// if not, the route Filter probably has the name of middlware to run
 							if routeFilter.Name == route.Use.Filter {
 								// If a match is found, run the middleware
 								routeFilter.Handle(FrodoWritter, FrodoRequest)
-								Log.Info("\nROUTE Middleware running: Written - %s | Request: - %v \n", req.Method, FrodoWritter.written)
+								Log.Info("FILTER Middleware [%s] running: Request Method - %s | Written back: - %v \n", routeFilter.Name, FrodoRequest.Method, FrodoWritter.written)
 							}
 						}
 
 						// If there was a write, stop processing
 						if FrodoWritter.written {
-							Log.Alert("\nEXITING: A write was made by Middleware Name: %d | %s \n", routeFilter.Name, req.Method)
+							Log.Alert("\nEXITING: A write was made by Filter Middleware: %d | %s \n", routeFilter.Name, FrodoRequest.Method)
 							// End the connection
 							return
 						}

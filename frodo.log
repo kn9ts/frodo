@@ -287,3 +287,510 @@ Frodo: 2015/07/16 18:24:24 logger.go:101: An application response was written ba
 Frodo: 2015/07/16 18:24:24 logger.go:101: The request took: 702.324µs
 Frodo: 2015/07/16 18:25:52 logger.go:101: An application response was written back: true
 Frodo: 2015/07/16 18:25:52 logger.go:101: The request took: 861.386µs
+Frodo: 2015/07/16 23:16:32 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:17:04 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:17:04 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:17:04 logger.go:101: The request took: 667.472µs
+Frodo: 2015/07/16 23:27:04 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:27:04 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:27:04 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:27:04 logger.go:101: ==> pattern: "/assets/" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:27:04 logger.go:101: ==> Adding route "/assets/" to METHOD map [GET]
+Frodo: 2015/07/16 23:27:16 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:27:16 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:27:16 logger.go:101: The request took: 372.691µs
+Frodo: 2015/07/16 23:27:17 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:27:17 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:27:17 logger.go:101: The request took: 234.841µs
+Frodo: 2015/07/16 23:27:18 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:27:18 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:27:18 logger.go:101: The request took: 213.167µs
+Frodo: 2015/07/16 23:27:23 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:27:23 logger.go:101: The request took: 244.085µs
+Frodo: 2015/07/16 23:29:08 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:29:08 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:29:08 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:29:08 logger.go:101: ==> pattern: "/assets/" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:29:08 logger.go:101: ==> Adding route "/assets/" to METHOD map [GET]
+Frodo: 2015/07/16 23:29:12 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:29:12 logger.go:101: The request took: 506.828µs
+Frodo: 2015/07/16 23:30:41 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:30:41 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:30:41 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:30:41 logger.go:101: ==> pattern: "/assets/" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:30:41 logger.go:101: ==> Adding route "/assets/" to METHOD map [GET]
+Frodo: 2015/07/16 23:30:44 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:30:44 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:30:44 logger.go:101: The request took: 339.633µs
+Frodo: 2015/07/16 23:31:13 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:31:13 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:31:13 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:31:13 logger.go:101: ==> pattern: "/assets/" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:31:13 logger.go:101: ==> Adding route "/assets/" to METHOD map [GET]
+Frodo: 2015/07/16 23:31:17 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:31:17 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:31:17 logger.go:101: The request took: 280.725µs
+Frodo: 2015/07/16 23:31:31 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:31:31 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:31:31 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:31:31 logger.go:101: ==> pattern: "/assets/" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:31:31 logger.go:101: ==> Adding route "/assets/" to METHOD map [GET]
+Frodo: 2015/07/16 23:31:33 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:31:33 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:31:33 logger.go:101: The request took: 489.262µs
+Frodo: 2015/07/16 23:33:16 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:33:16 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:33:16 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:33:16 logger.go:101: ==> pattern: "/assets//{file}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:33:16 logger.go:101: ==> Adding route "/assets//{file}" to METHOD map [GET]
+Frodo: 2015/07/16 23:33:19 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:33:19 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:33:19 logger.go:101: The request took: 249.815µs
+Frodo: 2015/07/16 23:33:35 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:33:35 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:33:35 logger.go:101: The request took: 243.018µs
+Frodo: 2015/07/16 23:35:07 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:35:07 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:35:07 logger.go:101: The request took: 577.394µs
+Frodo: 2015/07/16 23:35:12 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:35:12 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:35:12 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:35:12 logger.go:101: ==> pattern: "/assets/{file}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:35:12 logger.go:101: ==> Adding route "/assets/{file}" to METHOD map [GET]
+Frodo: 2015/07/16 23:35:26 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:35:26 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:35:26 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:35:26 logger.go:101: The request took: 2562047h47m16.854775807s
+Frodo: 2015/07/16 23:35:26 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:35:26 logger.go:101: The request took: 485.161µs
+Frodo: 2015/07/16 23:35:47 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:35:47 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:35:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:35:47 logger.go:101: The request took: 2562047h47m16.854775807s
+Frodo: 2015/07/16 23:35:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:35:47 logger.go:101: The request took: 425.255µs
+Frodo: 2015/07/16 23:36:55 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:36:55 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:36:55 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:36:55 logger.go:101: ==> pattern: "/assets/{file}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:36:55 logger.go:101: ==> Adding route "/assets/{file}" to METHOD map [GET]
+Frodo: 2015/07/16 23:36:57 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:36:57 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:36:57 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:36:57 logger.go:101: The request took: 2562047h47m16.854775807s
+Frodo: 2015/07/16 23:36:57 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:36:57 logger.go:101: The request took: 492.329µs
+Frodo: 2015/07/16 23:36:59 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:36:59 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:36:59 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:36:59 logger.go:101: The request took: 2562047h47m16.854775807s
+Frodo: 2015/07/16 23:36:59 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:36:59 logger.go:101: The request took: 397.486µs
+Frodo: 2015/07/16 23:40:57 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:40:57 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:40:57 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:40:57 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:40:57 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/16 23:41:01 logger.go:101: Serving the static file%!(EXTRA string=frodo.log)
+Frodo: 2015/07/16 23:41:01 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:41:01 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:41:01 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:41:01 logger.go:101: The request took: 2562047h47m16.854775807s
+Frodo: 2015/07/16 23:41:01 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:41:01 logger.go:101: The request took: 799.84µs
+Frodo: 2015/07/16 23:41:18 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:41:18 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:41:18 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:41:18 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:41:18 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/16 23:41:22 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/16 23:41:22 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:41:22 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:41:22 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:41:22 logger.go:101: The request took: 2562047h47m16.854775807s
+Frodo: 2015/07/16 23:41:22 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:41:22 logger.go:101: The request took: 719.088µs
+Frodo: 2015/07/16 23:53:29 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:53:29 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:53:29 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:53:29 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:53:29 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/16 23:56:47 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/16 23:56:47 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/16 23:56:47 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/16 23:56:47 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/16 23:56:47 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/16 23:56:52 logger.go:101: Serving the static file: /assets/frodo.log
+Frodo: 2015/07/16 23:56:52 logger.go:101: Header has been written: true
+Frodo: 2015/07/16 23:56:52 logger.go:101: An application response was written back: true
+Frodo: 2015/07/16 23:56:52 logger.go:101: The request took: 552.83µs
+Frodo: 2015/07/17 00:04:02 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:04:02 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:04:02 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:04:02 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:04:02 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:04:06 logger.go:101: Serving the static file: /assets/frodo.log
+Frodo: 2015/07/17 00:04:06 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:04:06 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:04:06 logger.go:101: The request took: 1.963198ms
+Frodo: 2015/07/17 00:13:10 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:13:10 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:13:10 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:13:10 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:13:10 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:13:21 logger.go:101: Serving the static file: /assets/frodo.log
+Frodo: 2015/07/17 00:13:21 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:13:21 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:13:21 logger.go:101: The request took: 930.064µs
+Frodo: 2015/07/17 00:15:32 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:15:32 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:15:32 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:15:32 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:15:32 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:15:38 logger.go:101: Serving the static file: /assets//frodo.log
+Frodo: 2015/07/17 00:15:38 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:15:38 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:15:38 logger.go:101: The request took: 321.2µs
+Frodo: 2015/07/17 00:18:12 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:18:12 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:18:12 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:18:12 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:18:12 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:18:14 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:18:14 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:18:14 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:18:14 logger.go:101: The request took: 321.958µs
+Frodo: 2015/07/17 00:18:20 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:18:20 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:18:20 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:18:20 logger.go:101: The request took: 335.749µs
+Frodo: 2015/07/17 00:19:22 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:19:22 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:19:22 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:19:22 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:19:22 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:19:24 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:19:24 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:19:24 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:19:24 logger.go:101: The request took: 367.326µs
+Frodo: 2015/07/17 00:35:37 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:35:37 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:35:37 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:35:37 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:35:37 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:35:40 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:35:40 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:35:40 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:35:40 logger.go:101: The request took: 441.968µs
+Frodo: 2015/07/17 00:36:47 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:36:47 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:36:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:36:47 logger.go:101: The request took: 793.816µs
+Frodo: 2015/07/17 00:36:51 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:36:51 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:36:51 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:36:51 logger.go:101: The request took: 1.509626ms
+Frodo: 2015/07/17 00:37:45 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:37:45 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:37:45 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:37:45 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:37:45 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:37:48 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:37:48 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:37:48 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:37:48 logger.go:101: The request took: 10.09303ms
+Frodo: 2015/07/17 00:37:48 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:37:48 logger.go:101: The request took: 10.226827ms
+Frodo: 2015/07/17 00:37:56 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:37:56 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:37:56 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:37:56 logger.go:101: The request took: 433.959µs
+Frodo: 2015/07/17 00:37:56 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:37:56 logger.go:101: The request took: 573.215µs
+Frodo: 2015/07/17 00:39:11 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:39:11 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:39:11 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:11 logger.go:101: The request took: 461.246µs
+Frodo: 2015/07/17 00:39:11 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:11 logger.go:101: The request took: 604.87µs
+Frodo: 2015/07/17 00:39:12 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:39:12 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:39:12 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:12 logger.go:101: The request took: 442.475µs
+Frodo: 2015/07/17 00:39:12 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:12 logger.go:101: The request took: 581.696µs
+Frodo: 2015/07/17 00:39:13 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:39:13 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:39:13 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:13 logger.go:101: The request took: 452.932µs
+Frodo: 2015/07/17 00:39:13 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:13 logger.go:101: The request took: 565.432µs
+Frodo: 2015/07/17 00:39:17 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:39:17 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:39:17 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:39:17 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:39:17 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:39:20 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:39:20 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:39:20 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:20 logger.go:101: The request took: 10.01188ms
+Frodo: 2015/07/17 00:39:20 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:20 logger.go:101: The request took: 10.334222ms
+Frodo: 2015/07/17 00:39:22 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:39:22 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:39:22 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:22 logger.go:101: The request took: 413.214µs
+Frodo: 2015/07/17 00:39:22 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:22 logger.go:101: The request took: 544.649µs
+Frodo: 2015/07/17 00:39:24 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:39:24 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:39:24 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:24 logger.go:101: The request took: 440.155µs
+Frodo: 2015/07/17 00:39:24 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:24 logger.go:101: The request took: 581.691µs
+Frodo: 2015/07/17 00:39:27 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:39:27 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:39:27 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:27 logger.go:101: The request took: 457µs
+Frodo: 2015/07/17 00:39:27 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:39:27 logger.go:101: The request took: 595.39µs
+Frodo: 2015/07/17 00:39:59 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:39:59 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:39:59 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:39:59 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:39:59 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:40:01 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:40:01 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:40:01 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:01 logger.go:101: The request took: 9.161402ms
+Frodo: 2015/07/17 00:40:01 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:01 logger.go:101: The request took: 9.31662ms
+Frodo: 2015/07/17 00:40:10 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:40:10 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:40:10 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:10 logger.go:101: The request took: 402.272µs
+Frodo: 2015/07/17 00:40:10 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:10 logger.go:101: The request took: 554.227µs
+Frodo: 2015/07/17 00:40:12 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:40:12 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:40:12 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:12 logger.go:101: The request took: 550.495µs
+Frodo: 2015/07/17 00:40:12 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:12 logger.go:101: The request took: 784.96µs
+Frodo: 2015/07/17 00:40:13 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:40:13 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:40:13 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:13 logger.go:101: The request took: 453.004µs
+Frodo: 2015/07/17 00:40:13 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:13 logger.go:101: The request took: 596.592µs
+Frodo: 2015/07/17 00:40:25 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:40:25 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:40:25 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:25 logger.go:101: The request took: 428.76µs
+Frodo: 2015/07/17 00:40:25 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:40:25 logger.go:101: The request took: 585.775µs
+Frodo: 2015/07/17 00:47:57 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:47:57 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:47:57 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:47:57 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:47:57 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:48:00 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:48:00 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:48:00 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:48:00 logger.go:101: The request took: 415.325µs
+Frodo: 2015/07/17 00:52:12 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:52:12 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:52:12 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:52:12 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:52:12 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:52:14 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:52:14 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:52:14 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:52:14 logger.go:101: The request took: 456.099µs
+Frodo: 2015/07/17 00:55:27 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 00:55:27 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 00:55:27 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 00:55:27 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 00:55:27 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 00:55:29 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:55:29 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:55:29 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:55:29 logger.go:101: The request took: 738.889µs
+Frodo: 2015/07/17 00:55:36 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 00:55:36 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 00:55:36 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 00:55:36 logger.go:101: The request took: 346.685µs
+Frodo: 2015/07/17 01:00:00 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:00:00 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:00:00 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:00:00 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:00:00 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:00:03 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:00:03 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:00:47 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:00:47 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:00:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:00:47 logger.go:101: The request took: 427.729µs
+Frodo: 2015/07/17 01:00:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:00:47 logger.go:101: The request took: 4.281804ms
+Frodo: 2015/07/17 01:01:16 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:01:16 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:01:16 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:01:16 logger.go:101: The request took: 457.209µs
+Frodo: 2015/07/17 01:07:16 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:07:16 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:07:16 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:07:16 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:07:16 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:07:20 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:07:20 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:07:20 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:07:20 logger.go:101: The request took: 459.108µs
+Frodo: 2015/07/17 01:07:24 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:07:24 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:07:24 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:07:24 logger.go:101: The request took: 364.227µs
+Frodo: 2015/07/17 01:07:57 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:07:57 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:07:57 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:07:57 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:07:57 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:08:01 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:08:01 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:08:01 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:08:01 logger.go:101: The request took: 423.287µs
+Frodo: 2015/07/17 01:08:03 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:08:03 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:08:03 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:08:03 logger.go:101: The request took: 369.21µs
+Frodo: 2015/07/17 01:08:31 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:08:31 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:08:31 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:08:31 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:08:31 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:08:35 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:08:35 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:08:35 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:08:35 logger.go:101: The request took: 11.167235ms
+Frodo: 2015/07/17 01:13:11 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:13:11 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:13:11 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:13:11 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:13:11 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:13:15 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:13:15 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:13:15 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:13:15 logger.go:101: The request took: 363.856µs
+Frodo: 2015/07/17 01:13:42 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:13:42 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:13:42 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:13:42 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:13:42 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:13:45 logger.go:101: Serving the static file: /Users/jheneknights/Go/src/github.com/kn9ts/frodo
+Frodo: 2015/07/17 01:13:45 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:13:45 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:13:45 logger.go:101: The request took: 420.153µs
+Frodo: 2015/07/17 01:14:20 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:14:20 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:14:20 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:14:20 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:14:20 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:14:23 logger.go:101: Serving the static file: /Users/jheneknights/Go/src/github.com/kn9ts/frodo
+Frodo: 2015/07/17 01:14:23 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:14:23 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:14:23 logger.go:101: The request took: 7.693307ms
+Frodo: 2015/07/17 01:16:54 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 01:16:54 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 01:16:54 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 01:16:54 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 01:16:54 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 01:16:57 logger.go:101: Serving the static file: frodo.log
+Frodo: 2015/07/17 01:16:57 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 01:16:57 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 01:16:57 logger.go:101: The request took: 8.518696ms
+Frodo: 2015/07/17 11:30:37 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 11:30:37 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 11:30:37 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 11:30:37 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 11:30:37 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 11:30:51 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 11:30:51 logger.go:101: The request took: 284.41µs
+Frodo: 2015/07/17 13:44:04 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 13:44:04 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 13:44:04 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 13:44:04 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 13:44:04 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 13:44:21 logger.go:101: Header has been written: true
+Frodo: 2015/07/17 13:44:21 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 13:44:21 logger.go:101: The request took: 1.560192ms
+Frodo: 2015/07/17 13:44:54 logger.go:101: 
+ROUTE Middleware running: Written - CHANGED_BY_BEFORE_MIDDLEWARE | Request: - false 
+Frodo: 2015/07/17 13:44:54 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 13:44:54 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 13:44:54 logger.go:101: The request took: 1.061883ms
+Frodo: 2015/07/17 13:46:53 logger.go:101: 
+ROUTE Middleware running: Written - CHANGED_BY_BEFORE_MIDDLEWARE | Request: - false 
+Frodo: 2015/07/17 13:46:53 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 13:46:53 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 13:46:53 logger.go:101: The request took: 247.161µs
+Frodo: 2015/07/17 14:00:40 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 14:00:40 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 14:00:40 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:00:40 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 14:00:40 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 14:00:47 logger.go:101: 
+ROUTE Middleware running: Written - CHANGED_BY_BEFORE_MIDDLEWARE | Request: - false 
+Frodo: 2015/07/17 14:00:47 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:00:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 14:00:47 logger.go:101: The request took: 606.205µs
+Frodo: 2015/07/17 14:03:03 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 14:03:03 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 14:03:03 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:03:03 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 14:03:03 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 14:03:09 logger.go:101: 
+ROUTE Middleware running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:03:09 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:03:09 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 14:03:09 logger.go:101: The request took: 784.97µs
+Frodo: 2015/07/17 14:04:09 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 14:04:09 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 14:04:09 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:04:09 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 14:04:09 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 14:04:14 logger.go:101: BEFORE Middleware No. 0 running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:04:14 logger.go:101: 
+ROUTE Middleware running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:04:14 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:04:14 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 14:04:14 logger.go:101: The request took: 1.05924ms
+Frodo: 2015/07/17 14:06:32 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 14:06:32 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 14:06:32 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:06:32 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 14:06:32 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 14:06:36 logger.go:101: BEFORE Middleware No. 0 running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:06:36 logger.go:101: ROUTE Middleware running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:06:36 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:06:36 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 14:06:36 logger.go:101: The request took: 1.347933ms
+Frodo: 2015/07/17 14:08:10 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 14:08:10 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 14:08:10 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:08:10 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 14:08:10 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 14:08:15 logger.go:101: BEFORE Middleware No. 0 running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:08:15 logger.go:101: FILTER Middleware [auth] running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:08:15 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:08:15 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 14:08:15 logger.go:101: The request took: 363.279µs
+Frodo: 2015/07/17 14:09:42 logger.go:101: ------- File Logging activated!! -------
+Frodo: 2015/07/17 14:09:42 logger.go:101: ==> Handler provided: func(http.ResponseWriter, *Frodo.Request)
+Frodo: 2015/07/17 14:09:42 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:09:42 logger.go:101: ==> pattern: "/assets/{filepath}" | handle: "Frodo.HandleFunc"
+Frodo: 2015/07/17 14:09:42 logger.go:101: ==> Adding route "/assets/{filepath}" to METHOD map [GET]
+Frodo: 2015/07/17 14:09:47 logger.go:101: BEFORE Middleware No. 0 running: Request Method - CHANGED_BY_BEFORE_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:09:47 logger.go:101: FILTER Middleware [auth] running: Request Method - CHANGED_BY_AUTH_FILTER_MIDDLEWARE | Written back: - false 
+Frodo: 2015/07/17 14:09:47 logger.go:101: converting func(http.ResponseWriter, *Request) to Frodo.HandleFunc
+Frodo: 2015/07/17 14:09:47 logger.go:101: An application response was written back: true
+Frodo: 2015/07/17 14:09:47 logger.go:101: The request took: 379.338µs

@@ -12,5 +12,5 @@ type Home struct {
 
 // Index is the default route handler for "/" route
 func (h *Home) Index(w http.ResponseWriter, r *Frodo.Request) {
-	w.Write([]byte("Hello world"))
+	w.Write([]byte("Hello world, a message from Index controller."))
 }
