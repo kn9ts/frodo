@@ -59,18 +59,6 @@ func inArray(str string, list []string) bool {
 	return false
 }
 
-// New short method to create a new app instance
-func New() *Router {
-	var New = new(Router)
-	return New
-}
-
-// Application return a new pointed Router instance
-func (r *Router) Application() *Router {
-	var New = new(Router)
-	return New
-}
-
 // Get is a shortcut for router.addHandle("GET", args...)
 func (r *Router) Get(args ...interface{}) {
 	r.addHandle("GET", args...)

@@ -11,12 +11,12 @@ import (
 func main() {
 	// Get an app instance by initializing the app
 	App := Frodo.New()
-	Reponse := render.New(render.Options{})
+	Response := render.New(render.Options{})
 
 	// route, handler/controller, which method for controller, name of route if you plan to give it one
 	// If no Method is given, then Default method kicks or decides via the HTTP Method channeling to the Controller
 	App.All("/", func(w http.ResponseWriter, r *Frodo.Request) {
-		w.Write([]byte("Hello World"))
+		Response.HTML("Hello World")
 	})
 
 	App.Get("/me", &controller.Users{}, "me")
@@ -31,7 +31,7 @@ func main() {
 	})
 
 	App.Match(Frodo.Methods{"GET", "POST"}, "/home", func(w http.ResponseWriter, r *Frodo.Request) {
-		Reponse.JSON(w, http.StatusOK, r)
+		Response.JSON(w, http.StatusOK, r)
 	}, "home")
 
 	App.Post("/profile", &controller.Home{}, Frodo.Use{Method: "Index", Name: "profile"})
