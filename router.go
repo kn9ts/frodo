@@ -488,7 +488,6 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 								// If a match is found, run the middleware
 								routeFilter.Handle(FrodoWritter, FrodoRequest)
 								Log.Info("FILTER Middleware [%s] running: Request Method - %s | Written back: - %v \n", routeFilter.Name, FrodoRequest.Method, FrodoWritter.written)
-
 							}
 						} else {
 							// TODO: Dev should be able to pass more than one filter
@@ -509,7 +508,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						}
 					}
 				} else {
-					fmt.Printf("--- NO Application Filters: %q ---\n", r.BeforeMiddleware)
+					Log.Debug("--- NO Application Filters: %q ---\n", r.BeforeMiddleware)
 				}
 
 				// Last lap:
@@ -556,9 +555,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				}
 
 				// If there was a write, stop processing
-				fmt.Printf("\n-------- EXIT: A Match was made. ---------\n\n")
 				if FrodoWritter.written {
 					// End the connection
+					Log.Debug("\n-------- EXIT: A Match was made. ---------\n\n")
 					return
 				}
 			}
