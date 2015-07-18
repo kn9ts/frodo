@@ -4,8 +4,9 @@ import (
 	"net/http"
 )
 
-// Controller Defines the basic structure of a REST Application Controller
-// the devs, controller should embedd this
+// Controller defines the basic structure of a REST Application Controller
+// the devs, controller should embed this to create their own controllers
+// It then automatically implements ControllerInterface, and can be passed as a controller in routing
 type Controller struct {
 	Method, Layout string
 }

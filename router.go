@@ -1,7 +1,6 @@
 package Frodo
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -294,17 +293,17 @@ func (r *Router) ServeFiles(pattern, assetDir string) {
 	})
 }
 
-// // Assets can be used instead of ServeFiles
-// // though internally it uses ServeFiles() since they do the same thing
-// func (r *Router) Assets(path string) {
-// 	r.ServeFiles(path)
-// }
-//
-// // Static can be used instead of Assets, ServeFiles
-// // though internally it uses ServeFiles() since they do the same thing
-// func (r *Router) Static(path string) {
-// 	r.ServeFiles(path)
-// }
+// Assets can be used instead of ServeFiles
+// though internally it uses ServeFiles() since they do the same thing
+func (r *Router) Assets(pattern, assetDir string) {
+	r.ServeFiles(pattern, assetDir)
+}
+
+// Static can be used instead of Assets, ServeFiles
+// though internally it uses ServeFiles() since they do the same thing
+func (r *Router) Static(pattern, assetDir string) {
+	r.ServeFiles(pattern, assetDir)
+}
 
 // ServeHTTP will receive all requests, and process them for our router
 // By using it we are implementing the http.Handler and thus can use our own ways to
@@ -364,9 +363,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// Remove the 1st slash "/", so either have "root/someshit/moreshit"
 	// This helps it matched the stored route paths
 	requestedURLParts := strings.Split(requestURL[1:], "/")
-	fmt.Printf("\n------- A request came in from [%s] %q --------\n\n", req.Method, req.URL.String())
-	fmt.Printf("Requested URL parts -- %q, %d \n", requestedURLParts, len(requestedURLParts))
-	// fmt.Println(requestedURLParts[len(requestedURLParts)-1] == "/root")
+	Log.Debug("\n------- A request came in from [%s] via %q --------\n\n", req.Method, req.URL.String())
+	Log.Debug("Requested URL parts -- %q, %d \n", requestedURLParts, len(requestedURLParts))
 
 	// Check if the method the request was made with is alloed
 	if !inArray(strings.ToUpper(req.Method), MethodsAllowed) {
@@ -396,7 +394,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if route.depth == len(requestedURLParts) {
 			// For now it seems it is true
 			aPossibleRouteMatchFound = true
-			fmt.Printf("Request comparisons: %q <<>> %q \n", routePatternParts, requestedURLParts)
+			Log.Debug("Request comparisons: %q <<>> %q \n", routePatternParts, requestedURLParts)
 
 			// If a possible match was acquired, step 2:
 			// loop thru each part of the route pattern matching them, if one fails then it's a no match
@@ -404,7 +402,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			for index, portion := range requestedURLParts {
 				// check to see route part is a pattern eg. /{param}/
 				isPattern, _ := regexp.MatchString(`\{[\w.-]{2,}\}`, routePatternParts[index])
-				fmt.Printf("Comparing: [%q] <<- | ->> [%q] \n", routePatternParts[index], portion)
+				Log.Debug("Comparing: [%q] <<- | ->> [%q] \n", routePatternParts[index], portion)
 
 				// if the route part passes the {param} match
 				if isPattern {
@@ -432,7 +430,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						// If no match here, falsify & break the search nothing found
 						aPossibleRouteMatchFound = false
 						// BREAK: No match found at all.
-						fmt.Printf("Did they match: %v\n", aPossibleRouteMatchFound)
+						Log.Debug("Was a match found: %v\n", aPossibleRouteMatchFound)
 						break
 					}
 				}
@@ -455,13 +453,13 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 						// If there was a write, stop processing
 						if FrodoWritter.written {
 							// End the connection
-							fmt.Printf("has written ==> %v", FrodoWritter.written)
+							Log.Info("Before middleware has responded/made a write ==> %v", FrodoWritter.written)
 							return
 						}
 					}
 				} else {
 					// No before middleware added
-					Log.Debug("--- NO middleware: %q ---\n", r.BeforeMiddleware)
+					Log.Debug("--- No \"before\" middleware found. | %q ---\n", r.BeforeMiddleware)
 				}
 
 				// If there is a filter middleware that should be implemented to the route
@@ -545,7 +543,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				// If there was a write, stop processing
 				if FrodoWritter.written {
 					// End the connection
-					Log.Debug("\n-------- EXIT: A Match was made. ---------\n\n")
+					Log.Debug("\n\n-------- EXIT: A Match was made. ---------\n\n")
 					return
 				}
 			}
@@ -559,7 +557,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// If system defualt if CustomHandle not Filter ||
+	// If system default if CustomHandle not Filter ||
 	http.Error(FrodoWritter, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	return
 }
@@ -601,7 +599,7 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 
 // AddFilters add Middlewares to routes, requests and responses
 func (r *Router) AddFilters(m *Middleware) {
-	fmt.Printf("\nMiddleware added %q\n", m.BeforeMiddleware)
+	Log.Info("\nMiddleware added %q\n", m.BeforeMiddleware)
 	r.Middleware.BeforeMiddleware = m.BeforeMiddleware
 	r.Middleware.AfterMiddleware = m.AfterMiddleware
 	r.Middleware.FilterMiddleware = m.FilterMiddleware

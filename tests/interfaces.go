@@ -43,7 +43,7 @@ func (p *Profile) Get() {
 	fmt.Println("Am method 'GET' for Profile.")
 }
 
-func main() {
+func testInterfaces() {
 	fn(&Name{})
 	// newf := func(w http.ResponseWriter, r *http.Request) {
 	//
