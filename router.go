@@ -75,7 +75,7 @@ func (r *Router) Put(args ...interface{}) {
 
 // Patch is a shortcut for router.addHandle("PATCH", args...)
 func (r *Router) Patch(args ...interface{}) {
-	r.addHandle("POST", args...)
+	r.addHandle("PATCH", args...)
 }
 
 // Delete is a shortcut for router.addHandle("DELETE", args...)
