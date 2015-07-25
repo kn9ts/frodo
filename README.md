@@ -1,11 +1,10 @@
-# Frodo [Go Web Mini Framework]
+# Frodo [Awesome Go Web Micro Framework]
 
-Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up
-Laravel(PHP), Slim (PHP) and ExpressJS(NodeJS).
+Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
 
-I built it to so as to learn Go, and also how frameworks work.
+<!-- I built it to so as to learn Go, and also how frameworks work. -->
 
-Hello world example:
+#### A big `Hello world` example:
 
 ```go
 package main
@@ -51,9 +50,9 @@ func main()  {
 }
 ```
 
-From the above example you can observe that **Frodo** can also accept controllers instead of the usual callback function passed.
 
-The controller used above route mapping would look as follows, should be:
+## Controllers
+From the above example you can observe that **Frodo** can also accept controllers instead of the usual callback function passed. The controller used above route mapping would look as follows, should be:
 
 ```go
 package controller
@@ -78,8 +77,9 @@ func (h *Home) Profile(w http.ResponseWriter, r *Frodo.Request) {
 }
 ```
 
-Ow Yeah! Ofcos you saw filters or MiddleWare added js before we initialized the server. So you can Create
-a folder named filter and declare your MiddleWare there, for example the above MiddleWare would look like This
+
+## Middleware/Application Filters
+**Owh Yeah!** Ofcos you saw `filters or MiddleWare` added just before we initialized the server. So you can Create a folder named filter and declare your MiddleWare there, for example the above MiddleWare would look like This
 when declared in a file inside the `filters` folder.
 
 
