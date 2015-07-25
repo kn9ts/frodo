@@ -44,7 +44,7 @@ func getCharCodeAt(s string, n int) rune {
 
 func main() {
 	Router := newRouter()
-	// addNodeTest(Router)
+	addNodeTest(Router)
 	checkForNodesTest(Router)
 }
 
@@ -59,16 +59,30 @@ func addNodeTest(r *path) {
 		node: make(map[rune]map[string]*path),
 	}
 
+	np1 := &path{
+		router: router{
+			name:    "user-image-id",
+			pattern: "/user/{param}",
+			handler: "/{param} handler for route /user/",
+		},
+		node: make(map[rune]map[string]*path),
+	}
+
 	// Try to add the node to thr route
 	_, ok := r.addNode(np)
-
-	// has it been added
-	log.Printf("the node has been added %q | %v\n\n", r, ok)
 
 	// Test if you will find the route
 	pattern := "/user/{param}/images/{id}"
 	p, lp := r.getNode(pattern)
 	log.Printf("The NODE: %v | lvl: %d \n", p.router.handler, lp)
+	log.Printf("<==============================| the node has been added |================================>\n\n%q | %v\n\n", r, ok)
+
+	_, ok1 := r.addNode(np1)
+
+	pattern1 := "/user/{param}"
+	p1, lp1 := r.getNode(pattern1)
+	log.Printf("The NODE: %v | lvl: %d \n", p1.router.handler, lp1)
+	log.Printf("<==============================| the node has been added |================================>\n\n%q | %v\n\n", r, ok1)
 }
 
 func checkForNodesTest(r *path) {
@@ -198,13 +212,13 @@ func transverseNode(branch *path, part string) (*path, bool) {
 		// return branch, false
 	}
 
-	log.Println("||||||| Route has not been found, maybe it is dymanic")
+	log.Println("<========================= Route has not been found, maybe it is dymanic =========================>")
 
 	// If no return has happened
 	// then no map was found, try match for a {param} like pathmap
 	// "{" charcode 47 as the holder
 	if dynamicmap, ok := branch.node[47]; ok {
-		log.Println("||||||| In here |||||")
+		log.Println("<========================= In here ===========================>")
 
 		// if yes, the get the dynamic route pathmap map
 		if path, ok := dynamicmap["{param}"]; ok {
@@ -359,5 +373,4 @@ func (p *path) addNode(np *path) (*path, bool) {
 
 func (p *path) addRouteHandler(np *path) {
 	p.router = np.router
-
 }
