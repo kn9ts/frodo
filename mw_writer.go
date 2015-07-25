@@ -12,13 +12,15 @@ type MiddlewareResponseWriter struct {
 	http.ResponseWriter
 	written   bool
 	timeStart time.Time
+	method    string
+	route     string
 }
 
 // Write writes data back the client/creates the body
 func (w *MiddlewareResponseWriter) Write(bytes []byte) (int, error) {
 	w.written = true
 	Log.Info("An application response was written back: %v\n", w.written)
-	Log.Info("The request took: %v", time.Now().Sub(w.timeStart))
+	Log.Success("|%s| %v | %v - %s", w.method, http.StatusOK, time.Now().Sub(w.timeStart), w.route)
 	return w.ResponseWriter.Write(bytes)
 }
 
