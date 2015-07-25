@@ -222,14 +222,14 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 		} else {
 			// initialise the path map, if nothing had been added
 			if len(r.paths) == 0 {
-				Log.Warn("Zero routes added, must initialise and then add")
+				Log.Debug("Zero routes added, must initialise and then add")
 				r.paths = make(map[string][]route)
 			}
 			// add the 1st path
 			r.paths[httpVerb] = append(r.paths[httpVerb], newRoute)
 		}
 
-		Log.Success("==> Adding route \"%s\" to METHOD map [%s]\n", pattern, httpVerb)
+		Log.Debug("==> Adding route \"%s\" to METHOD map [%s]\n", pattern, httpVerb)
 	} else {
 		// not enough arguements provided
 		Log.Fatal("Error: Not enough arguements provided.")
@@ -318,6 +318,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		// Since http.ResponseWriter is embedded you can access it
 		ResponseWriter: w,
 		timeStart:      timer,
+		method:         req.Method,
+		route:          req.RequestURI,
 	}
 	FrodoRequest := &Request{
 		Request: req,
@@ -363,7 +365,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// Remove the 1st slash "/", so either have "root/someshit/moreshit"
 	// This helps it matched the stored route paths
 	requestedURLParts := strings.Split(requestURL[1:], "/")
-	Log.Debug("\n------- A request came in from [%s] via %q --------\n\n", req.Method, req.URL.String())
+	Log.Info("\n------- A request came in from [%s] via %q --------\n\n", req.Method, req.URL.String())
 	Log.Debug("Requested URL parts -- %q, %d \n", requestedURLParts, len(requestedURLParts))
 
 	// Check if the method the request was made with is alloed
@@ -459,7 +461,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					}
 				} else {
 					// No before middleware added
-					Log.Debug("--- No \"before\" middleware found. | %q ---\n", r.BeforeMiddleware)
+					Log.Info("--- No \"before\" middleware found. | %q ---\n", r.BeforeMiddleware)
 				}
 
 				// If there is a filter middleware that should be implemented to the route
@@ -488,7 +490,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 						// If there was a write, stop processing
 						if FrodoWritter.written {
-							Log.Alert("\nEXITING: A write was made by Filter Middleware: %d | %s \n", routeFilter.Name, FrodoRequest.Method)
+							Log.Info("\nEXITING: A write was made by Filter Middleware: %d | %s \n", routeFilter.Name, FrodoRequest.Method)
 							// End the connection
 							return
 						}
