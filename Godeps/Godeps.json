@@ -1,0 +1,15 @@
+{
+	"ImportPath": "github.com/kn9ts/frodo",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/fatih/color",
+			"Comment": "v0.1",
+			"Rev": "1b35f289c47d5c73c398cea8e006b7bcb6234a96"
+		},
+		{
+			"ImportPath": "github.com/shiena/ansicolor",
+			"Rev": "264b0566801533988151a23fc5f75d66d831d6ae"
+		}
+	]
+}
