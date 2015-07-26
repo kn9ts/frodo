@@ -36,7 +36,10 @@ func main()  {
 	// ----- Methods and Dynamic routes -----
 	// You can declare which method in a controller should be called for the specified route
 	// Oh yeah! you can name your routes eg. user-profile
-	App.Post("/profile/{name}", &controller.Home{}, Frodo.Use{Method: "Profile", Name: "user-profile"})
+	App.Post("/profile/{name}", &controller.Home{}, Frodo.Use{
+		Method: "Profile",
+		Name: "user-profile",
+	})
 
 	// ----- Multiple Methods -----
 	// How about declaring more than one method to accept a specific Request, HELL YES!!!
@@ -121,7 +124,7 @@ func init() {
 ```
 
 ## Release History
-__Version: 0.9.1 Preview__ 
+__Version: 0.9.1 Preview__
 
 ## License
 Copyright (c) 2014 __Eugene Mutai__
