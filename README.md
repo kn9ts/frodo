@@ -1,10 +1,9 @@
-# Frodo [Awesome Go Web Micro Framework]
+# Frodo [Go Web Micro Framework]
 
 Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
-
 <!-- I built it to so as to learn Go, and also how frameworks work. -->
 
-#### A big `Hello world` example:
+##### A big `Hello world` example:
 
 ```go
 package main
@@ -52,7 +51,9 @@ func main()  {
 
 
 ## Controllers
-From the above example you can observe that **Frodo** can also accept controllers instead of the usual callback function passed. The controller used above route mapping would look as follows, should be:
+From the above example you can observe that **Frodo** can also accept `controllers` instead of the usual callback function passed. The controller used above route mapping would look as follows, placed in the `controllers` folder, the file name does not matter but the package name matters. It then should embed `Frodo.Controller` struct so as to inherit controller functionality.
+
+Example of `controller.Home{}` used above would be:
 
 ```go
 package controller
@@ -79,9 +80,7 @@ func (h *Home) Profile(w http.ResponseWriter, r *Frodo.Request) {
 
 
 ## Middleware/Application Filters
-**Owh Yeah!** Ofcos you saw `filters or MiddleWare` added just before we initialized the server. So you can Create a folder named filter and declare your MiddleWare there, for example the above MiddleWare would look like This
-when declared in a file inside the `filters` folder.
-
+**Owh Yeah!** Ofcourse you saw `Filters or MiddleWare` added just before we initialized the server. So you can create a folder named `filter` and declare your MiddleWare there, for example the above `filter.MiddleWare` would look like this when declared in a file inside the `filters` folder.
 
 ```go
 package filters
@@ -120,3 +119,10 @@ func init() {
 
 }
 ```
+
+## Release History
+__Version: 0.9.1 Preview__ 
+
+## License
+Copyright (c) 2014 __Eugene Mutai__
+Licensed under the [MIT license](http://mit-license.org/)
