@@ -2,9 +2,8 @@ package Frodo
 
 import "net/http"
 
-// Request type will carry all the http.Request values, and params in curly {} brackets that are
-// translated from url param values to ready to be used values
-// also decided to handle file uploads
+// Request type carrys all the http.Request values, and params in curly {} brackets that are
+// translated from url param values to ready-to-be-used values in route specific Handler function
 type Request struct {
 	*http.Request
 	params, form map[string]string
@@ -23,7 +22,7 @@ func (r *Request) GetParam(name string) string {
 	return ""
 }
 
-// Param is equalin using get
+// Param is shorter equivalent of `GetParam` method
 func (r *Request) Param(name string) string {
 	return r.GetParam(name)
 }
@@ -40,8 +39,8 @@ func (r *Request) SetParam(name, value string) bool {
 	return true
 }
 
-// Input gets ALL posted key/values from all Methods
-// Keep in mind r.Form == type url.Values map[string][]string
+// Input gets ALL key/values sent via POST from all methods.
+// Keep in mind `r.Form == type url.Values map[string][]string`
 func (r *Request) Input(name string) interface{} {
 	if r.Form == nil {
 		r.ParseForm()
@@ -57,7 +56,7 @@ func (r *Request) Input(name string) interface{} {
 	return nil
 }
 
-// HasInput checks for the existence of the given input name in the inputs
+// HasInput checks for the existence of the given input name in the inputs sent from a FORM
 func (r *Request) HasInput(name string) bool {
 	if r.Form == nil {
 		r.ParseForm()
@@ -67,8 +66,8 @@ func (r *Request) HasInput(name string) bool {
 	return ok
 }
 
-// HasFile mimics FormFile method for Request
-// ------ func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)
+// HasFile mimics FormFile method from `http.Request`
+// 		func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)
 func (r *Request) HasFile(name string) bool {
 	_, _, err := r.FormFile(name)
 	if err != nil {
@@ -86,8 +85,7 @@ func (r *Request) InputFile(name string) (*UploadFile, error) {
 	return nil, err
 }
 
-// InputFiles parses all uploaded files and creates an array of UploadFile
-// representing each uploaded file
+// InputFiles parses all uploaded files and creates an array of UploadFile type representing each uploaded file
 func (r *Request) InputFiles(name string) []*UploadFile {
 	// Instantiate r.files
 	if r.files == nil {
@@ -103,8 +101,7 @@ func (r *Request) InputFiles(name string) []*UploadFile {
 	return r.files
 }
 
-// MoveAll is a neat trick for uploads all the files that have been parsed
-// Awesome for bulk uploading, and storage
+// MoveAll is a neat trick to upload all the files that have been parsed. Awesome for bulk uploading, and storage.
 func (r *Request) MoveAll(args ...interface{}) (bool, int) {
 	if r.files == nil {
 		return false, 0
@@ -124,8 +121,7 @@ func (r *Request) MoveAll(args ...interface{}) (bool, int) {
 	return false, count
 }
 
-// IsAjax checks if the Request was made via AJAX
-// the XMLHttpRequest will usually be sent with a X-Requested-With HTTP header.
+// IsAjax checks if the Request was made via AJAX, the XMLHttpRequest will usually be sent with a X-Requested-With HTTP header.
 func (r *Request) IsAjax() bool {
 	if r.Header.Get("X-Request-With") != "" {
 		return true

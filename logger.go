@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// Logger embeds *log.Logger thus is able to handle all logs
+// Logger embeds the standard library's `*log.Logger` to handle all logs
 type Logger struct {
 	FilePath, FileName string
 	LogFile            *log.Logger
@@ -31,7 +31,7 @@ var logLevel = map[string]logDetails{
 	"Debug":   {color.FgWhite, 7},
 }
 
-// Log will be global var that handles Frodo's logging
+// Log becomes the global var that handles Frodo's logging
 var Log *Logger
 
 func init() {
@@ -50,7 +50,7 @@ func init() {
 	}
 }
 
-// Initialise checks if a logging instance exists, if not commence one
+// Initialise checks if a logging instance exists, if not starts one
 func (console *Logger) Initialise() {
 	// For now collect all the buffers on to a buffer memory
 	buffer := new(bytes.Buffer)
@@ -69,45 +69,41 @@ func (console *Logger) Debug(format string, args ...interface{}) {
 	console.log(logLevel["Debug"], color.FgWhite, false, format, args...)
 }
 
-// Success can be used to log information on successful transactions
-// logs in green
+// Success can be used to log information on successful transactions(logs in green)
 func (console *Logger) Success(format string, args ...interface{}) {
 	console.log(logLevel["Success"], color.FgGreen, false, format, args...)
 }
 
-// Warn can be used  to log meaningful and light errors/bugs that might want to be checked later
+// Warn can be used to log meaningful and light errors/bugs that might want to be checked later
 func (console *Logger) Warn(format string, args ...interface{}) {
 	console.log(logLevel["Warn"], color.FgYellow, false, format, args...)
 }
 
-// Error can be used to log Errors
-// red in color
+// Error can be used to log Errors(red in color).
 func (console *Logger) Error(format string, args ...interface{}) {
 	console.log(logLevel["Error"], color.FgRed, false, format, args...)
 }
 
-// Alert can be used to log Alerts, maybe on certain events!!
-// Magenta background, white text
+// Alert can be used to log Alerts, maybe on certain events (Magenta background, white text).
 func (console *Logger) Alert(format string, args ...interface{}) {
 	color.Set(color.BgMagenta, color.FgBlack, color.Bold)
 	defer color.Unset()
 	console.log(logLevel["Alert"], color.FgBlack, true, format, args...)
 }
 
-// Critical can be used to log system wide Critical information that needs to be fixed immediately
-// Red background and white text
+// Critical can be used to log system wide Critical information that needs to be fixed immediately (Red background and white text)
 func (console *Logger) Critical(format string, args ...interface{}) {
 	color.Set(color.BgRed, color.FgWhite, color.Bold)
 	defer color.Unset()
 	console.log(logLevel["Fatal"], color.FgRed, true, format, args...)
 }
 
-// Fatal is similar to Frodo.Log.Error but panics after logging
+// Fatal is similar to `Frodo.Log.Error` but panics after logging
 func (console *Logger) Fatal(format string, args ...interface{}) {
 	console.Critical(format, args...)
 }
 
-// main logging handler
+// all logging functions call this `log` function
 func (console *Logger) log(d logDetails, colorAttr color.Attribute, isBold bool, format string, args ...interface{}) {
 	// Only print out, logs that are the selected level or higher
 	if console.level >= d.level {
@@ -136,7 +132,7 @@ func (console *Logger) log(d logDetails, colorAttr color.Attribute, isBold bool,
 	}
 }
 
-// WriteToFile prompts all logs to be written to a file
+// WriteToFile prompts all logs to be written to a file if not already enabled
 func (console *Logger) WriteToFile(fl ...interface{}) (*log.Logger, error) {
 
 	// If arguements are provided, then expect:
@@ -177,7 +173,7 @@ func (console *Logger) WriteToFile(fl ...interface{}) (*log.Logger, error) {
 	return console.LogFile, nil
 }
 
-// SetLevel enables the user to select a log level for the app to monitor the app
+// SetLevel enables the user to select a LOG LEVEL for the app to monitor the app
 func (console *Logger) SetLevel(option string) {
 	// Check to see if the log level exists
 	if _, ok := logLevel[option]; ok {
@@ -185,7 +181,7 @@ func (console *Logger) SetLevel(option string) {
 	}
 }
 
-// Dump simply does just that. Dumps all the logging that has been collected by the buffer
+// Dump simply does just that. Dumps all the logging that has been collected by the buffer to the output
 func (console *Logger) Dump() {
 	console.LogFile.Print(console.buffers)
 }

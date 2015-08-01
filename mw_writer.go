@@ -7,7 +7,7 @@ import (
 
 // MiddlewareResponseWriter is used to hijack/embed http.ResponseWriter
 // thus making it satisfy the ResponseWriter interface, we then add a written boolean property
-// to trace when a write made and exit
+// to trace when a write made, with a couple of other helpful properties
 type MiddlewareResponseWriter struct {
 	http.ResponseWriter
 	written   bool

@@ -1,3 +1,31 @@
+// The MIT License (MIT)
+// Copyright © 2015 Eugene Mutai. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file.
+//
+// Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
+//
+// Hello World example:
+//
+//    package main
+//
+//    import (
+//        "net/http"
+//        "github.com/kn9ts/frodo"
+//    )
+//
+//    func main()  {
+//        // Create a new instance of Frodo
+//        App := Frodo.New()
+//
+//        // Add the root route
+//        App.Get("/", func(w http.ResponseWriter, r *Frodo.Request) {
+//            //    https://www.youtube.com/watch?v=vjW8wmF5VWc
+//            w.Write([]byte("Hello World!!!"))
+//        })
+//
+//        App.Serve() // Open in browser http://localhost:3102/
+//    }
 package Frodo
 
 import (
@@ -48,7 +76,7 @@ func makeHandler(h HandleFunc) HandleFunc {
 	return h
 }
 
-// Function to check if the the string given is in the array
+// inArray checks if the the string given is in the array
 func inArray(str string, list []string) bool {
 	for _, v := range list {
 		if v == str {
@@ -236,8 +264,7 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 	}
 }
 
-// Handler is an adapter which allows the usage of an http.Handler as a
-// request handle.
+// Handler is an adapter which allows the usage of an http.Handler as a request handle.
 func (r *Router) Handler(method, path string, handler http.Handler) {
 	r.addHandle(method, path,
 		func(w http.ResponseWriter, req *Request) {
@@ -305,8 +332,8 @@ func (r *Router) Static(pattern, assetDir string) {
 	r.ServeFiles(pattern, assetDir)
 }
 
-// ServeHTTP will receive all requests, and process them for our router
-// By using it we are implementing the http.Handler and thus can use our own ways to
+// ServeHTTP is the function that receives all requests, and process them for our router
+// by using it we are implementing the http.Handler and thus can use our own ways to
 // handle incoming requests and process them
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// Start timing request
@@ -566,14 +593,14 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // Serve deploys the application
 // Default port is 3102, inspired by https://en.wikipedia.org/wiki/Fourth_Age
-// The Fourth Age followed the defeat of Sauron and the destruction of his One Ring,
+// The "Fourth Age" followed the defeat of Sauron and the destruction of his One Ring,
 // but did not officially begin until after the Bearers of the Three Rings left Middle-earth for Valinor,
 // the 'Uttermost West'
 func (r *Router) Serve() {
 	r.ServeOnPort(3102)
 }
 
-// ServeOnPort is to used if you change the port that you plan on serving on
+// ServeOnPort is to used if you plan change the port to serve the application on
 func (r *Router) ServeOnPort(portNumber interface{}) {
 	var portNumberString string
 	// Converting an interface into the data type it should be
@@ -599,7 +626,7 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 	Log.Success("Server deployed at: %s", portNumberString)
 }
 
-// AddFilters add Middlewares to routes, requests and responses
+// AddFilters adds `Middlewares` to routes, requests and responses
 func (r *Router) AddFilters(m *Middleware) {
 	Log.Info("\nMiddleware added %q\n", m.BeforeMiddleware)
 	r.Middleware.BeforeMiddleware = m.BeforeMiddleware

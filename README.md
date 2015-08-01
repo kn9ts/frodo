@@ -35,7 +35,7 @@ package main
 import (
 	"net/http"
 	"github.com/kn9ts/frodo"
-	"github.com/usernaeme/project/filters"
+	"github.com/username/project/filters"
 	"github.com/username/project/controller"
 	"gopkg.in/unrolled/render.v1"
 )
@@ -75,7 +75,6 @@ func main()  {
 	App.Serve() // Open in browser http://localhost:3102/
 }
 ```
-
 
 ## Controllers
 From the above example you can observe that **Frodo** can also accept `controllers` instead of the usual callback function passed. The controller used above route mapping would look as follows, placed in the `controllers` folder, the file name does not matter but the package name matters. It then should embed `Frodo.Controller` struct so as to inherit controller functionality.

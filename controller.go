@@ -4,17 +4,15 @@ import (
 	"net/http"
 )
 
-// Controller defines the basic structure of a REST Application Controller
-// the devs, controller should embed this to create their own controllers
+// Controller defines the basic structure of a REST application controller,
+// the devs controller should embed this to create their own controllers.
 // It then automatically implements ControllerInterface, and can be passed as a controller in routing
 type Controller struct {
 	Method, Layout string
 }
 
-// ControllerInterface will be used to parse back the dev's Controller back to it's own type
-// Since we know what a REST controller entails the following methods
-// Then any Struct that implements the Controller methods
-// suffices the ControllerInterface
+// ControllerInterface will be used to parse back the developer's controller back to it's own type.
+// Since we know that a REST controller entails the following methods then any struct that implements the Controller methods suffices the ControllerInterface
 type ControllerInterface interface {
 	_Construct(func(*Controller))
 	Index(http.ResponseWriter, *Request)
@@ -34,9 +32,8 @@ func (c *Controller) _Construct(fn func(*Controller)) {
 	fn(c)
 }
 
-// Index is the default handler for any incoming request that is not matched to it's handler
-// It can also be used for specific route, mostly for root routes
-// Display a listing of the resource.
+// Index is the default handler for any incoming request or route's request that is not matched to it's handler
+// It can also be used for specific route, mostly for the root routes("/")
 func (c *Controller) Index(w http.ResponseWriter, r *Request) {
 	http.Error(w, "Method Not Allowed", 405)
 }
