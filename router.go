@@ -1,7 +1,6 @@
-// The MIT License (MIT)
 // Copyright © 2015 Eugene Mutai. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be found
-// in the LICENSE file.
+//
+// Use of this source code is governed by the MIT License (MIT) license that can be found in the LICENSE file.
 //
 // Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
 //
@@ -26,6 +25,7 @@
 //
 //        App.Serve() // Open in browser http://localhost:3102/
 //    }
+//
 package Frodo
 
 import (
