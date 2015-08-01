@@ -3,6 +3,30 @@
 Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
 <!-- I built it to so as to learn Go, and also how frameworks work. -->
 
+##### `Hello World` example:
+
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/kn9ts/frodo"
+)
+
+func main()  {
+    // Create a new instance of Frodo
+    App := Frodo.New()
+
+    // Add the root route
+    App.Get("/", func(w http.ResponseWriter, r *Frodo.Request) {
+        // https://www.youtube.com/watch?v=vjW8wmF5VWc
+        w.Write([]byte("Hello World!!!"))
+    })
+
+    App.Serve() // Open in browser http://localhost:3102/
+}
+```
+
 ##### A big `Hello world` example:
 
 ```go
