@@ -3,6 +3,8 @@
 Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
 <!-- I built it to so as to learn Go, and also how frameworks work. -->
 
+Looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
+
 ##### `Hello World` example:
 
 ```go
