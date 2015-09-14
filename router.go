@@ -19,8 +19,7 @@
 //
 //        // Add the root route
 //        App.Get("/", func(w http.ResponseWriter, r *Frodo.Request) {
-//            //    https://www.youtube.com/watch?v=vjW8wmF5VWc
-//            w.Write([]byte("Hello World!!!"))
+//            w.Write([]byte("Expect the best but always prepare for the worst!!!"))
 //        })
 //
 //        App.Serve() // Open in browser http://localhost:3102/
@@ -348,6 +347,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		method:         req.Method,
 		route:          req.RequestURI,
 	}
+
+	// Wrap the supplied http.Request
 	FrodoRequest := &Request{
 		Request: req,
 		// params, form - map[string]string,
@@ -367,7 +368,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			// If it doesnt, use original for fallback
+			// If it doesnt, use original http error function as fallback
 			http.Error(FrodoWritter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -465,7 +466,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				}
 			}
 
-			// Since FrodoWritter it's a pointer, it's just being passed
+			// Since FrodoWritter is a pointer, it's just being passed by address, not need for reassigning
 			// FrodoWritter := FrodoWritter
 
 			// After checking the portions if aPossibleRouteMatchFound remains true,

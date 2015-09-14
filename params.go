@@ -30,7 +30,8 @@ func (r *Request) Param(name string) string {
 // SetParam adds a key/value pair to the Request params
 func (r *Request) SetParam(name, value string) bool {
 	// 1st check if it has been initialised
-	if r.params != nil { // If not initialise
+	if r.params != nil {
+		// If not initialise
 		r.params = make(map[string]string)
 	}
 
@@ -67,7 +68,7 @@ func (r *Request) HasInput(name string) bool {
 }
 
 // HasFile mimics FormFile method from `http.Request`
-// 		func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)
+//      func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)
 func (r *Request) HasFile(name string) bool {
 	_, _, err := r.FormFile(name)
 	if err != nil {
