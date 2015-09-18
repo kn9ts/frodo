@@ -622,9 +622,10 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 	err := http.ListenAndServe(":"+portNumberString, r)
 	if err != nil {
 		Log.Fatal("Error: server failed to initialise: %s", err)
+	} else {
+		// If server successfully Launched
+		Log.Success("Server deployed at: %s", portNumberString)
 	}
-	// If server successfully Launched
-	Log.Success("Server deployed at: %s", portNumberString)
 }
 
 // AddFilters adds `Middlewares` to routes, requests and responses
