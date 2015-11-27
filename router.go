@@ -54,10 +54,6 @@ type route struct {
 	Use     // Handles extra details
 }
 
-// Methods type is used in Match method to get all methods user wants to apply
-// that will help in invoking the related handler
-type Methods []string
-
 // Router is a http.Handler which can be used to dispatch requests to different
 // handler functions via configurable routes
 type Router struct {
@@ -66,8 +62,20 @@ type Router struct {
 	NotFoundHandle, MethodNotAllowedHandle, PanicHandle HandleFunc
 }
 
-// HTTP Methods/Verbs allowed
-var MethodsAllowed = Methods{"GET", "POST", "PATCH", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"}
+type methods []string
+
+// MethodsAllowed are HTTP Methods that Frodo can only accept for now
+// Methods type is used in Match method to get all methods user wants to apply
+// that will help in invoking the related handler
+var MethodsAllowed = methods{
+	"GET",
+	"POST",
+	"PUT",
+	"DELETE",
+	"PATCH",
+	"HEAD",
+	"OPTIONS",
+}
 
 // Little function to convert type "func(http.ResponseWriter, *Request)" to Frodo.HandleFunc
 func makeHandler(h HandleFunc) HandleFunc {
@@ -122,7 +130,7 @@ func (r *Router) Options(args ...interface{}) {
 
 // Match adds the Handle to the provided Methods/HTTPVerbs for a given route
 // EG. GET/POST from /home to have the same Handle
-func (r *Router) Match(httpVerbs Methods, args ...interface{}) {
+func (r *Router) Match(httpVerbs methods, args ...interface{}) {
 	if len(httpVerbs) > 0 {
 		for _, verb := range httpVerbs {
 			r.addHandle(strings.ToUpper(verb), args...)
@@ -132,7 +140,7 @@ func (r *Router) Match(httpVerbs Methods, args ...interface{}) {
 
 // All method adds the Handle to all Methods/HTTPVerbs for a given route
 func (r *Router) All(args ...interface{}) {
-	methods := Methods{"GET", "POST", "PATCH", "PUT", "DELETE", "PATCH"}
+	methods := methods{"GET", "POST", "PUT", "DELETE", "PATCH"}
 	r.Match(methods, args...)
 }
 
@@ -155,7 +163,7 @@ func (r *Router) addHandle(verb string, args ...interface{}) {
 		v := reflect.ValueOf(args[1]).Type()
 		Log.Info("==> Handler provided: %s", v)
 
-		// Debug: First of check if it is a Frodo.HandleFunc type, might have been altered on first/previous loop
+		// Debug: First of, check if it is a Frodo.HandleFunc type, might have been altered on first/previous loop
 		// if not check the function if it suffices the HandleFunc type pattern
 		// If it does -- func(http.ResponseWriter, *Request)
 		// then convert it to a Frodo.HandleFunc type

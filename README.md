@@ -1,6 +1,7 @@
 # Frodo [Go Web Micro Framework]
 
-Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
+Frodo is a [Go](https://golang.org) micro web framework inspired by the sweet/beautiful parts that
+make up Laravel(php), Slim (php) and ExpressJS(node.js).
 <!-- I built it to so as to learn Go, and also how frameworks work. -->
 
 Looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
@@ -21,7 +22,6 @@ func main()  {
 
     // Add the root route
     App.Get("/", func(w http.ResponseWriter, r *Frodo.Request) {
-        // https://www.youtube.com/watch?v=vjW8wmF5VWc
         w.Write([]byte("Hello World!!!"))
     })
 
