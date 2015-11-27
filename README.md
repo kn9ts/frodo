@@ -37,9 +37,9 @@ package main
 import (
 	"net/http"
 	"github.com/kn9ts/frodo"
-	"github.com/username/project/filters"
-	"github.com/username/project/controller"
 	"gopkg.in/unrolled/render.v1"
+	"./filters"
+	"./controller"
 )
 
 func main()  {
@@ -79,9 +79,11 @@ func main()  {
 ```
 
 ## Controllers
-From the above example you can observe that **Frodo** can also accept `controllers` instead of the usual callback function passed. The controller used above route mapping would look as follows, placed in the `controllers` folder, the file name does not matter but the package name matters. It then should embed `Frodo.Controller` struct so as to inherit controller functionality.
+From the above example you can observe that **Frodo** can also use `controllers` instead of the usual callback function passed. The `controller` used above with the route mapping would look as follows, placed in the `controllers` folder, which is in the root directory of your project.
 
-Example of `controller.Home{}` used above would be:
+The file name does not matter but the package name matters. It then should embed `Frodo.Controller` struct so as to inherit **Frodo's** controller functionality.
+
+`controller.Home{}` in `./controllers/home.go` file used above would be:
 
 ```go
 package controller
@@ -108,7 +110,7 @@ func (h *Home) Profile(w http.ResponseWriter, r *Frodo.Request) {
 
 
 ## Middleware/Application Filters
-**Owh Yeah!** Ofcourse you saw `Filters or MiddleWare` added just before we initialized the server. So you can create a folder named `filter` and declare your MiddleWare there, for example the above `filter.MiddleWare` would look like this when declared in a file inside the `filters` folder.
+**Owh Yeah!** Ofcourse you saw `Filters or MiddleWare` added just before we initialized the server. So you can create a folder named `filter` in your project's folder and declare your MiddleWare there, for example the above `filter.MiddleWare` would look like this when declared in a file (`filters.go`) inside the `./filters` folder.
 
 ```go
 package filters
@@ -118,7 +120,7 @@ import (
 	"net/http"
 )
 
-// This is how a dev makes a Filter instance
+// Create a Filter instance
 var MiddleWare = Frodo.NewFilters()
 
 func init() {
@@ -134,7 +136,7 @@ func init() {
 	})
 
 	// Adding route secific filters/middleware
-	// pass the name of route pattern of the route you want to run the following middleware
+	// pass the exact name of route pattern of the route you want to run the following middleware
 	MiddleWare.Filter("user-profile", func(w http.ResponseWriter, r *Frodo.Request) {
 		// do something here before the router named 'user-profile'
 		// for example check if the name is 'Eugene'
