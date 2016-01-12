@@ -1,6 +1,7 @@
 package frodo
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -37,19 +38,19 @@ type Router struct {
 
 	// Configurable http.Handler which is called when no matching route is
 	// found. If it is not set, http.NotFound is used.
-	NotFound http.Handler
+	NotFound Handle
 
 	// Configurable http.Handler which is called when a request
 	// cannot be routed and HandleMethodNotAllowed is true.
 	// If it is not set, http.Error with http.StatusMethodNotAllowed is used.
-	MethodNotAllowed http.Handler
+	MethodNotAllowed Handle
 
 	// Function to handle panics recovered from http handlers.
 	// It should be used to generate a error page and return the http error code
 	// 500 (Internal Server Error).
 	// The handler can be used to keep your server from crashing because of
 	// unrecovered panics.
-	PanicHandler http.Handler
+	PanicHandler Handle
 }
 
 // Make sure the Router conforms with the http.Handler interface
@@ -66,38 +67,38 @@ func New() *Router {
 }
 
 // Get is a shortcut for router.Handle("GET", path, handle)
-func (r *Router) Get(path string, handle Handle) {
-	r.Handle("GET", path, handle)
+func (r *Router) Get(path string, handle ...Handle) {
+	r.Handle("GET", path, handle...)
 }
 
-// Head is a shortcut for router.Handle("HEAD", path, handle)
-func (r *Router) Head(path string, handle Handle) {
-	r.Handle("HEAD", path, handle)
+// Head is a shortcut for router.Handle("HEAD", path, ...handle)
+func (r *Router) Head(path string, handle ...Handle) {
+	r.Handle("HEAD", path, handle...)
 }
 
-// Options is a shortcut for router.Handle("OPTIONS", path, handle)
-func (r *Router) Options(path string, handle Handle) {
-	r.Handle("OPTIONS", path, handle)
+// Options is a shortcut for router.Handle("OPTIONS", path, ...handle)
+func (r *Router) Options(path string, handle ...Handle) {
+	r.Handle("OPTIONS", path, handle...)
 }
 
-// Post is a shortcut for router.Handle("POST", path, handle)
-func (r *Router) Post(path string, handle Handle) {
-	r.Handle("POST", path, handle)
+// Post is a shortcut for router.Handle("POST", path, ...handle)
+func (r *Router) Post(path string, handle ...Handle) {
+	r.Handle("POST", path, handle...)
 }
 
-// Put is a shortcut for router.Handle("PUT", path, handle)
-func (r *Router) Put(path string, handle Handle) {
-	r.Handle("PUT", path, handle)
+// Put is a shortcut for router.Handle("PUT", path, ...handle)
+func (r *Router) Put(path string, handle ...Handle) {
+	r.Handle("PUT", path, handle...)
 }
 
-// Patch is a shortcut for router.Handle("PATCH", path, handle)
-func (r *Router) Patch(path string, handle Handle) {
-	r.Handle("PATCH", path, handle)
+// Patch is a shortcut for router.Handle("PATCH", path, ...handle)
+func (r *Router) Patch(path string, handle ...Handle) {
+	r.Handle("PATCH", path, handle...)
 }
 
-// Delete is a shortcut for router.Handle("DELETE", path, handle)
-func (r *Router) Delete(path string, handle Handle) {
-	r.Handle("DELETE", path, handle)
+// Delete is a shortcut for router.Handle("DELETE", path, ...handle)
+func (r *Router) Delete(path string, handle ...Handle) {
+	r.Handle("DELETE", path, handle...)
 }
 
 // Handle registers a new request handle with the given path and method.
@@ -108,7 +109,7 @@ func (r *Router) Delete(path string, handle Handle) {
 // This function is intended for bulk loading and to allow the usage of less
 // frequently used, non-standardized or custom methods (e.g. for internal
 // communication with a proxy).
-func (r *Router) Handle(method, path string, handle Handle) {
+func (r *Router) Handle(method, path string, handle ...Handle) {
 	if path[0] != '/' {
 		panic("path must begin with '/' in path '" + path + "'")
 	}
@@ -123,14 +124,21 @@ func (r *Router) Handle(method, path string, handle Handle) {
 		r.trees[method] = root
 	}
 
-	root.addRoute(path, handle)
+	// Instantiate a Handler type variable
+	var handlers []Handle
+	// Add all the handlers to it
+	handlers = append(handlers, handle...)
+	fmt.Printf("%v and the no %d\n", handlers, len(handle))
+
+	// store them to it's route node
+	root.addRoute(path, handlers)
 }
 
 // Handler is an adapter which allows the usage of an http.Handler as a
 // request handle.
 func (r *Router) Handler(method, path string, handler http.Handler) {
 	r.Handle(method, path,
-		func(w http.ResponseWriter, req *http.Request, _ Params) {
+		func(w http.ResponseWriter, req *http.Request, m *Middleware) {
 			handler.ServeHTTP(w, req)
 		},
 	)
@@ -159,15 +167,15 @@ func (r *Router) ServeFiles(path string, root http.FileSystem) {
 
 	fileServer := http.FileServer(root)
 
-	r.Get(path, func(w http.ResponseWriter, req *http.Request, ps Params) {
-		req.URL.Path = ps.ByName("filepath")
+	r.Get(path, func(w http.ResponseWriter, req *http.Request, m *Middleware) {
+		req.URL.Path = m.GetParam("filepath")
 		fileServer.ServeHTTP(w, req)
 	})
 }
 
-func (r *Router) recover(res http.ResponseWriter, req *http.Request) {
+func (r *Router) recover(w http.ResponseWriter, req *http.Request) {
 	if rcv := recover(); rcv != nil {
-		r.PanicHandler.ServeHTTP(res, req)
+		r.PanicHandler(w, req, nil)
 	}
 }
 
@@ -176,11 +184,11 @@ func (r *Router) recover(res http.ResponseWriter, req *http.Request) {
 // If the path was found, it returns the handle function and the path parameter
 // values. Otherwise the third return value indicates whether a redirection to
 // the same path with an extra / without the trailing slash should be performed.
-func (r *Router) Lookup(method, path string) (interface{}, Params, string, bool) {
+func (r *Router) Lookup(method, path string) ([]Handle, Params, bool) {
 	if root := r.trees[method]; root != nil {
 		return root.getValue(path)
 	}
-	return nil, nil, "", false
+	return nil, nil, false
 }
 
 // ServeHTTP makes the router implement the http.Handler interface.
@@ -190,20 +198,29 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if root := r.trees[req.Method]; root != nil {
-		// get the Handle of the route path requested
-		handle, ps, handleType, tsr := root.getValue(req.URL.Path)
+		path := req.URL.Path
 
-		// if a handle was found, run it!
-		if handle != nil {
-			// handle(w, req, ps)
-			// handle is an interface{}, we need to type assert/cast it to the right type
-			TypeCastHandleAndCallIt(handle, handleType, ps, tsr)
-			return
+		// get the Handle of the route path requested
+		handlers, ps, tsr := root.getValue(path)
+
+		// if []Handle was found were found, run it!
+		noOfHandlers := len(handlers)
+		if noOfHandlers != 0 {
+			// if the 1st handler is defined, run it
+			mdwr := &Middleware{
+				handlers:     handlers[0:noOfHandlers],
+				total:        noOfHandlers,
+				nextPosition: 1,
+				Params:       ps,
+			}
+			// run the 1st handler
+			// the rest shall be called to run by mdwr.next()
+			handlers[0](w, req, mdwr)
 		}
 
 		// if a handle was not found, the method is not a CONNECT request
 		// and it is not a root path request
-		if handle == nil && req.Method != "CONNECT" && path != "/" {
+		if noOfHandlers == 0 && req.Method != "CONNECT" && path != "/" {
 			code := 301 // Permanent redirect, request with GET method
 			if req.Method != "GET" {
 				// Temporary redirect, request with same method
@@ -239,31 +256,16 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// Handle 405
 	if r.HandleMethodNotAllowed {
-		for method := range r.trees {
-			// Skip the requested method - we already tried this one
-			if method == req.Method {
-				continue
-			}
-
-			handle, _, _, _ := r.trees[method].getValue(req.URL.Path)
-			if handle != nil {
-				if r.MethodNotAllowed != nil {
-					r.MethodNotAllowed.ServeHTTP(w, req)
-				} else {
-					http.Error(w,
-						http.StatusText(http.StatusMethodNotAllowed),
-						http.StatusMethodNotAllowed,
-					)
-				}
-				return
-			}
-		}
+		MethodsNotAllowed(r, w, req)
+		return
 	}
 
-	// Handle 404
+	//Handle 404
 	if r.NotFound != nil {
-		r.NotFound.ServeHTTP(w, req)
-	} else {
-		http.NotFound(w, req)
+		r.NotFound(w, req, nil)
 	}
+
+	// If system default if CustomHandle not Filter ||
+	http.Error(w, http.StatusText(404), http.StatusNotFound)
+	return
 }

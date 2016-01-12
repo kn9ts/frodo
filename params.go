@@ -11,9 +11,9 @@ type Param struct {
 // It is therefore safe to read values by the index.
 type Params []Param
 
-// ByName returns the value of the first Param which key matches the given name.
+// GetParam returns the value of the first Param which key matches the given name.
 // If no matching Param is found, an empty string is returned.
-func (ps Params) ByName(name string) string {
+func (ps Params) GetParam(name string) string {
 	for i := range ps {
 		if ps[i].Key == name {
 			return ps[i].Value

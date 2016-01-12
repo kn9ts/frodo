@@ -42,10 +42,12 @@ type node struct {
 	maxParams uint8
 	indices   string
 	children  []*node
-	handle    interface{}
+	handle    []Handle
 	priority  uint32
-	// Frodo: handleType will held make the use of different handlers
-	handleType string
+
+	// Added by Frodo
+	noOfHandlers int
+	runPosition  int
 }
 
 // increments priority of the given child and reorders if necessary
@@ -76,7 +78,7 @@ func (n *node) incrementChildPrio(pos int) int {
 
 // addRoute adds a node with the given handle to the path.
 // Not concurrency-safe!
-func (n *node) addRoute(path string, handle Handle) {
+func (n *node) addRoute(path string, handle []Handle) {
 	fullPath := path
 	n.priority++
 	numParams := countParams(path)
@@ -102,13 +104,12 @@ func (n *node) addRoute(path string, handle Handle) {
 			// Split edge
 			if i < len(n.path) {
 				child := node{
-					path:       n.path[i:],
-					wildChild:  n.wildChild,
-					indices:    n.indices,
-					children:   n.children,
-					handle:     n.handle,
-					priority:   n.priority - 1,
-					handleType: n.handleType,
+					path:      n.path[i:],
+					wildChild: n.wildChild,
+					indices:   n.indices,
+					children:  n.children,
+					handle:    n.handle,
+					priority:  n.priority - 1,
 				}
 
 				// Update maxParams (max of all children)
@@ -122,7 +123,7 @@ func (n *node) addRoute(path string, handle Handle) {
 				// []byte for proper unicode char conversion, see #65
 				n.indices = string([]byte{n.path[i]})
 				n.path = path[:i]
-				n.handle = nil
+				n.handle = make([]Handle, 0)
 				n.wildChild = false
 			}
 
@@ -199,7 +200,7 @@ func (n *node) addRoute(path string, handle Handle) {
 	}
 }
 
-func (n *node) insertChild(numParams uint8, path, fullPath string, handle Handle) {
+func (n *node) insertChild(numParams uint8, path, fullPath string, handle []Handle) {
 	var offset int // already handled bytes of the path
 
 	// find prefix until first wildcard (beginning with ':'' or '*'')
@@ -317,7 +318,7 @@ func (n *node) insertChild(numParams uint8, path, fullPath string, handle Handle
 // If no handle can be found, a TSR (trailing slash redirect) recommendation is
 // made if a handle exists with an extra (without the) trailing slash for the
 // given path.
-func (n *node) getValue(path string) (handle interface{}, p Params, handleType string, tsr bool) {
+func (n *node) getValue(path string) (handle []Handle, p Params, tsr bool) {
 walk: // Outer loop for walking the tree
 	for {
 		if len(path) > len(n.path) {
@@ -409,8 +410,6 @@ walk: // Outer loop for walking the tree
 			// We should have reached the node containing the handle.
 			// Check if this node has a handle registered.
 			if handle = n.handle; handle != nil {
-				// Frodo: Make sure to give back it's handle type
-				handleType = n.handleType
 				return
 			}
 
