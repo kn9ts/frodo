@@ -1,9 +1,9 @@
 # Custom config
 *.log
-/lab
-/docs
-/tmp
-/frodo-reference
+lab/
+docs/
+tmp/
+frodo-reference/
 
 # Created by https://www.gitignore.io/api/node,laravel,bower,justcode,linux,osx,jetbrains,sublimetext,vim,xcode
 
@@ -89,7 +89,8 @@ bower_components
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
