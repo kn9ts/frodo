@@ -2,7 +2,10 @@ package frodo
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 // Router is a http.Handler which can be used to dispatch requests to different
@@ -134,14 +137,12 @@ func (r *Router) Handle(method, path string, handle ...Handle) {
 	root.addRoute(path, handlers)
 }
 
-// Handler is an adapter which allows the usage of an http.Handler as a
-// request handle.
+// Handler is an adapter which allows the usage of an
+// http.Handler as a request handle.
 func (r *Router) Handler(method, path string, handler http.Handler) {
-	r.Handle(method, path,
-		func(w http.ResponseWriter, req *http.Request, m *Middleware) {
-			handler.ServeHTTP(w, req)
-		},
-	)
+	r.Handle(method, path, func(w http.ResponseWriter, req *Request) {
+		handler.ServeHTTP(w, req.Request)
+	})
 }
 
 // HandlerFunc is an adapter which allows the usage of an http.HandlerFunc as a
@@ -167,15 +168,24 @@ func (r *Router) ServeFiles(path string, root http.FileSystem) {
 
 	fileServer := http.FileServer(root)
 
-	r.Get(path, func(w http.ResponseWriter, req *http.Request, m *Middleware) {
-		req.URL.Path = m.GetParam("filepath")
-		fileServer.ServeHTTP(w, req)
+	r.Get(path, func(w http.ResponseWriter, req *Request) {
+		req.URL.Path = req.GetParam("filepath")
+		fileServer.ServeHTTP(w, req.Request)
 	})
 }
 
-func (r *Router) recover(w http.ResponseWriter, req *http.Request) {
-	if rcv := recover(); rcv != nil {
-		r.PanicHandler(w, req, nil)
+func (r *Router) recover(w *AppResponseWriter, req *Request) {
+	if err := recover(); err != nil {
+		// if a custom panic handler has been defined
+		// run that instead
+		if r.PanicHandler != nil {
+			r.PanicHandler(w, req)
+			return
+		}
+
+		// If it doesnt, use original http error function as fallback
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -193,9 +203,26 @@ func (r *Router) Lookup(method, path string) ([]Handle, Params, bool) {
 
 // ServeHTTP makes the router implement the http.Handler interface.
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if r.PanicHandler != nil {
-		defer r.recover(w, req)
+	// 1st things 1st, wrap the response writter
+	// to add the extra functionality we want
+	// basically trace when a write happens
+	FrodoWritter := &AppResponseWriter{
+		ResponseWriter: w,
+		timeStart:      time.Now(),
+		method:         req.Method,
+		route:          req.RequestURI,
 	}
+
+	// Wrap the supplied http.Request
+	FrodoRequest := &Request{
+		Request: req,
+		// params, form - map[string]string,
+		// files []*UploadFile
+	}
+
+	// ---------- 500: Internal Server Error -----------
+	// If a panic/error takes place while process, recover and run PanicHandle if defined
+	defer r.recover(FrodoWritter, &Request{Request: req})
 
 	if root := r.trees[req.Method]; root != nil {
 		path := req.URL.Path
@@ -205,17 +232,19 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 		// if []Handle was found were found, run it!
 		noOfHandlers := len(handlers)
-		if noOfHandlers != 0 {
+		if noOfHandlers > 0 {
 			// if the 1st handler is defined, run it
-			mdwr := &Middleware{
-				handlers:     handlers[0:noOfHandlers],
+			FrodoRequest := &Request{
+				Request:      req,
+				handlers:     handlers[:noOfHandlers],
 				total:        noOfHandlers,
-				nextPosition: 1,
+				nextPosition: 0,
 				Params:       ps,
 			}
+
 			// run the 1st handler
-			// the rest shall be called to run by mdwr.next()
-			handlers[0](w, req, mdwr)
+			// the rest shall be called to run by m.Next()
+			FrodoRequest.transact(FrodoWritter)
 		}
 
 		// if a handle was not found, the method is not a CONNECT request
@@ -256,16 +285,35 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// Handle 405
 	if r.HandleMethodNotAllowed {
-		MethodsNotAllowed(r, w, req)
+		for method := range r.trees {
+			// Skip the requested method - we already tried this one
+			if method == req.Method {
+				continue
+			}
+
+			handle, ps, _ := r.trees[method].getValue(req.URL.Path)
+			if handle != nil {
+				if r.MethodNotAllowed != nil {
+					FrodoRequest.Params = ps
+					r.MethodNotAllowed(FrodoWritter, FrodoRequest)
+				} else {
+					http.Error(w,
+						http.StatusText(http.StatusMethodNotAllowed),
+						http.StatusMethodNotAllowed,
+					)
+				}
+				return
+			}
+		}
 		return
 	}
 
 	//Handle 404
 	if r.NotFound != nil {
-		r.NotFound(w, req, nil)
+		r.NotFound(FrodoWritter, FrodoRequest)
 	}
 
-	// If system default if CustomHandle not Filter ||
+	// If there is not Handle for a 404 error use Go's w
 	http.Error(w, http.StatusText(404), http.StatusNotFound)
 	return
 }
@@ -293,14 +341,17 @@ func (r *Router) ServeOnPort(portNumber interface{}) {
 			}
 			portNumberString = pns
 		} else {
-			log.Fatal("Error: PortNumber can only be a numeral string or integer")
+			log.Fatal("[ERROR] PortNumber can only be a numeral string or integer")
+			return
 		}
 	}
 
 	err := http.ListenAndServe(":"+portNumberString, r)
 	if err != nil {
-		log.Fatalf("Error: server failed to initialise: %s", err)
+		log.Fatalf("[ERROR] Server failed to initialise: %s", err)
+		return
 	}
+
 	// If server successfully Launched
-	log.Printf("Server deployed at: %s", portNumberString)
+	log.Printf("[LOG] Server deployed at: %s", portNumberString)
 }
