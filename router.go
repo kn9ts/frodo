@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -102,6 +103,22 @@ func (r *Router) Patch(path string, handle ...Handle) {
 // Delete is a shortcut for router.Handle("DELETE", path, ...handle)
 func (r *Router) Delete(path string, handle ...Handle) {
 	r.Handle("DELETE", path, handle...)
+}
+
+// Match adds the Handle to the provided Methods/HTTPVerbs for a given route
+// EG. GET/POST from /home to have the same Handle
+func (r *Router) Match(httpVerbs Methods, path string, handle ...Handle) {
+	if len(httpVerbs) > 0 {
+		for _, verb := range httpVerbs {
+			r.Handle(strings.ToUpper(verb), path, handle...)
+		}
+	}
+}
+
+// All method adds the Handle to all HTTP methods/HTTP verbs for the route given
+// it does not add routing Handlers for HEADER and OPTIONS HTTP verbs
+func (r *Router) All(path string, handle ...Handle) {
+	r.Match(Methods{"GET", "POST", "PUT", "DELETE", "PATCH"}, path, handle...)
 }
 
 // Handle registers a new request handle with the given path and method.
