@@ -191,7 +191,7 @@ func (r *Router) ServeFiles(path string, root http.FileSystem) {
 	})
 }
 
-func (r *Router) recover(w *AppResponseWriter, req *Request) {
+func (r *Router) recover(w *ResponseWriter, req *Request) {
 	if err := recover(); err != nil {
 		// if a custom panic handler has been defined
 		// run that instead
@@ -223,11 +223,11 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// 1st things 1st, wrap the response writter
 	// to add the extra functionality we want
 	// basically trace when a write happens
-	FrodoWritter := AppResponseWriter{
+	FrodoWritter := ResponseWriter{
 		ResponseWriter: w,
 		timeStart:      time.Now(),
 		method:         req.Method,
-		route:          req.RequestURI,
+		route:          req.URL.Path,
 	}
 
 	// Wrap the supplied http.Request

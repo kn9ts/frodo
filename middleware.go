@@ -10,8 +10,8 @@ type Request struct {
 	handlers       []Handle
 	total          int
 	nextPosition   int
-	ResponseWriter *AppResponseWriter
 	files          []*UploadedFile
+	ResponseWriter *ResponseWriter
 	*http.Request
 	Params
 }
@@ -19,10 +19,10 @@ type Request struct {
 // Middleware declares the minimum implementation necessary for a handlers
 // to be used as Frodo's middleware route Handlers
 type Middleware interface {
-	Next(w *AppResponseWriter)
+	Next(w *ResponseWriter)
 }
 
-func (r *Request) runHandleChain(w *AppResponseWriter) {
+func (r *Request) runHandleChain(w *ResponseWriter) {
 	r.nextPosition++
 	r.ResponseWriter = w
 	r.handlers[0](w, r)
