@@ -1,4 +1,4 @@
-package Frodo
+package frodo
 
 import (
 	"fmt"
@@ -9,12 +9,12 @@ import (
 	"reflect"
 )
 
-// UploadPath for now, declares the path to upload the files
-var UploadPath = "./assets/upload/"
+// FileUploadsPath for now, declares the path to upload the files
+var FileUploadsPath = "./assets/uploads/"
 
-// UploadFile struct/type is the data that makes up an uploaded file
+// UploadedFile struct/type is the data that makes up an uploaded file
 // once it is recieved and parsed eg. using request.FormFile()
-type UploadFile struct {
+type UploadedFile struct {
 	multipart.File
 	*multipart.FileHeader
 	/*
@@ -26,42 +26,42 @@ type UploadFile struct {
 }
 
 // Name returns the name of the file when it was uploaded
-func (file *UploadFile) Name() string {
+func (file *UploadedFile) Name() string {
 	// found in *multipart.FileHeader
 	return file.Filename
 }
 
 // Size returns the size of the file in question
-func (file *UploadFile) Size() int64 {
+func (file *UploadedFile) Size() int64 {
 	defer file.Close()
 	return file.Size()
 }
 
 // Extension returns the extension of the file uploaded
-func (file *UploadFile) Extension() string {
+func (file *UploadedFile) Extension() string {
 	// _, header, error := r.FormFile(name)
 	ext := filepath.Ext(file.Filename)
 	return ext
 }
 
 // Move basically moves/transfers the uploaded file to the upload folder provided
-/*
- * Using ...interface{} because I want the user to only pass more than one argument
- * when changing upload dir and filename, if none is changed then defaults  are used
- *
- *    eg. file.Move(true)
- *        ----- or -----
- *        file.Move("../new_upload_path/", "newfilename.png")
- */
-func (file *UploadFile) Move(args ...interface{}) bool {
+//
+// Using ...interface{} because I want the user to only pass more than one argument
+// when changing upload dir and filename, if none is changed then defaults  are used
+//
+//    eg. file.Move(true)
+//        ----- or -----
+//        file.Move("../new_upload_path/", "newfilename.png")
+//
+func (file *UploadedFile) Move(args ...interface{}) bool {
 	file.Open()
 	defer file.Close()
 	name := args[0]
 	val := reflect.ValueOf(name)
 
-	// If a string was give, then treat is a the UploadPath
+	// If a string was give, then treat is a the FileUploadsPath
 	if val.Kind().String() == "string" {
-		UploadPath = name.(string)
+		FileUploadsPath = name.(string)
 	}
 
 	var FileName string
@@ -72,7 +72,7 @@ func (file *UploadFile) Move(args ...interface{}) bool {
 		FileName = file.Name()
 	}
 
-	savedFile, err := os.OpenFile(UploadPath+FileName, os.O_WRONLY|os.O_CREATE, 0666)
+	savedFile, err := os.OpenFile(FileUploadsPath+FileName, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println(err)
 		return false
@@ -88,14 +88,14 @@ func (file *UploadFile) Move(args ...interface{}) bool {
 }
 
 // MimeType returns the mime/type of the file uploaded
-func (file *UploadFile) MimeType() string {
+func (file *UploadedFile) MimeType() string {
 	mimetype := file.Header.Get("Content-Type")
 	return mimetype
 }
 
 // IsValid checks if the file is alright by opening it up
 // if errors come up while opening it is an invalid upload
-func (file *UploadFile) IsValid() bool {
+func (file *UploadedFile) IsValid() bool {
 	_, err := file.Open()
 	defer file.Close()
 	if err != nil {

@@ -1,7 +1,11 @@
-package Frodo
+package frodo
 
-// New is the short method to create a new Frodo application instance
+// New returns a new initialized Router.
+// Path auto-correction, including trailing slashes, is enabled by default.
 func New() *Router {
-	var New = new(Router)
-	return New
+	return &Router{
+		RedirectTrailingSlash:  true,
+		RedirectFixedPath:      true,
+		HandleMethodNotAllowed: true,
+	}
 }
