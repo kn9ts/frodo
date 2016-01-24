@@ -206,7 +206,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// 1st things 1st, wrap the response writter
 	// to add the extra functionality we want
 	// basically trace when a write happens
-	FrodoWritter := &AppResponseWriter{
+	FrodoWritter := AppResponseWriter{
 		ResponseWriter: w,
 		timeStart:      time.Now(),
 		method:         req.Method,
@@ -214,7 +214,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Wrap the supplied http.Request
-	FrodoRequest := &Request{
+	FrodoRequest := Request{
 		Request: req,
 		// params, form - map[string]string,
 		// files []*UploadFile
@@ -222,7 +222,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	// ---------- 500: Internal Server Error -----------
 	// If a panic/error takes place while process, recover and run PanicHandle if defined
-	defer r.recover(FrodoWritter, &Request{Request: req})
+	defer r.recover(&FrodoWritter, &FrodoRequest)
 
 	if root := r.trees[req.Method]; root != nil {
 		path := req.URL.Path
@@ -236,7 +236,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			// if the 1st handler is defined, run it
 			FrodoRequest := &Request{
 				Request:      req,
-				handlers:     handlers[:noOfHandlers],
+				handlers:     handlers[:noOfHandlers-1],
 				total:        noOfHandlers,
 				nextPosition: 0,
 				Params:       ps,
@@ -244,7 +244,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 			// call out the middleware Handles
 			// the rest shall be called to run by m.Next()
-			FrodoRequest.runHandleChain(FrodoWritter)
+			FrodoRequest.runHandleChain(&FrodoWritter)
 		}
 
 		// if a handle was not found, the method is not a CONNECT request
@@ -295,7 +295,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			if handle != nil {
 				if r.MethodNotAllowed != nil {
 					FrodoRequest.Params = ps
-					r.MethodNotAllowed(FrodoWritter, FrodoRequest)
+					r.MethodNotAllowed(&FrodoWritter, &FrodoRequest)
 				} else {
 					http.Error(w,
 						http.StatusText(http.StatusMethodNotAllowed),
@@ -310,7 +310,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	//Handle 404
 	if r.NotFound != nil {
-		r.NotFound(FrodoWritter, FrodoRequest)
+		r.NotFound(&FrodoWritter, &FrodoRequest)
 	}
 
 	// If there is not Handle for a 404 error use Go's w
