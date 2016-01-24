@@ -41,7 +41,7 @@ func (r *Request) Next() {
 		// 1st check if a write has happened
 		// meaning a response has been issued out to the client
 		// if not run the next handler in line
-		if r.ResponseWriter.WriteHappened() == false {
+		if r.ResponseWriter.ResponseSent() == false {
 			nextHandler(r.ResponseWriter, r)
 		}
 	}

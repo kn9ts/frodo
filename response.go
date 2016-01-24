@@ -17,21 +17,24 @@ const errorMessage string = "[ERROR] Headers were already written."
 // to trace when a write made, with a couple of other helpful properties
 type AppResponseWriter struct {
 	http.ResponseWriter
-	written   bool
-	timeStart time.Time
-	timeEnd   time.Time
-	duration  time.Duration
-	status    int
-	size      int64
-	method    string
-	route     string
+	headerWritten bool
+	written       bool
+	timeStart     time.Time
+	timeEnd       time.Time
+	duration      time.Duration
+	status        int
+	size          int64
+	method        string
+	route         string
 }
 
 // Write writes data back the client/creates the body
 func (w *AppResponseWriter) Write(bytes []byte) (int, error) {
-	if !w.WriteHappened() {
+	if !w.HeaderWritten() {
 		w.WriteHeader(http.StatusOK)
-	} else {
+	}
+
+	if w.ResponseSent() {
 		log.Println(errorMessage)
 		return 1, errors.New(errorMessage)
 	}
@@ -48,19 +51,25 @@ func (w *AppResponseWriter) Write(bytes []byte) (int, error) {
 
 // WriteHeader writes the Headers out
 func (w *AppResponseWriter) WriteHeader(code int) {
-	if w.WriteHappened() {
+	if w.HeaderWritten() {
 		log.Println(errorMessage)
 		return
 	}
 	w.ResponseWriter.WriteHeader(code)
+	w.headerWritten = true
 	w.status = code
-	w.written = true
 }
 
-// WriteHappened checks if a write has been made
+// ResponseSent checks if a write has been made
 // starts with a header being sent out
-func (w *AppResponseWriter) WriteHappened() bool {
+func (w *AppResponseWriter) ResponseSent() bool {
 	return w.written
+}
+
+// HeaderWritten checks if a write has been made
+// starts with a header being sent out
+func (w *AppResponseWriter) HeaderWritten() bool {
+	return w.headerWritten
 }
 
 // Flush wraps response writer's Flush function.
