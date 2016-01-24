@@ -357,12 +357,10 @@ walk: // Outer loop for walking the tree
 					// save param value
 					if p == nil {
 						// lazy allocation
-						p = make(Params, 0, n.maxParams)
+						p = make(Params)
 					}
-					i := len(p)
-					p = p[:i+1] // expand slice within preallocated capacity
-					p[i].Key = n.path[1:]
-					p[i].Value = path[:end]
+					key := n.path[1:]
+					p[key] = path[:end]
 
 					// we need to go deeper!
 					if end < len(path) {
@@ -392,12 +390,10 @@ walk: // Outer loop for walking the tree
 					// save param value
 					if p == nil {
 						// lazy allocation
-						p = make(Params, 0, n.maxParams)
+						p = make(Params)
 					}
-					i := len(p)
-					p = p[:i+1] // expand slice within preallocated capacity
-					p[i].Key = n.path[2:]
-					p[i].Value = path
+					key := n.path[2:]
+					p[key] = path
 
 					handle = n.handle
 					return
