@@ -275,7 +275,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			// if the 1st handler is defined, run it
 			FrodoRequest := &Request{
 				Request:      req,
-				handlers:     handlers[:noOfHandlers-1],
+				handlers:     handlers[:noOfHandlers],
 				total:        noOfHandlers,
 				nextPosition: 0,
 				Params:       ps,
