@@ -1,12 +1,15 @@
-# frodo [Go Web Micro Framework]
+# Frodo (Go Web Micro Framework)
 
-[Frodo](http://godoc.org/github.com/kn9ts/frodo) is a Go micro web framework inspired by ExpressJS.
-<!-- I built it to so as to learn Go, and also how frameworks work.
-A big thanks to TJ Holowaychuk too for the inspiration -->
+[Frodo](http://godoc.org/github.com/kn9ts/frodo) is a Go micro
+web framework inspired by ExpressJS.
+
+<!-- I built it to so as to learn Go, and also how
+frameworks work. A big thanks to TJ Holowaychuk too
+for the inspiration -->
 
 Are you looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
 
-##### `Hello World` example:
+##### `Hello world` example
 
 ```go
 package main
@@ -29,7 +32,7 @@ func main()  {
 }
 ```
 
-##### A bigger `Hello world` example:
+##### A bigger `Hello world` example
 
 ```go
 package main
@@ -77,7 +80,8 @@ func main()  {
 ```
 
 ## Controllers
-From the above example you can observe that **frodo** can also use `controllers` instead of the usual route handlers.
+From the above example you can observe that **frodo** can also use
+`controllers` instead of the usual route handlers.
 
 The `controller` used above with the route mapping would look as described below; placed in
 the `controllers` folder, which should be in root directory of your project.
@@ -115,9 +119,10 @@ func (h *Home) Profile(w http.ResponseWriter, r *frodo.Request) {
 
 
 ## Middleware/Application Filters
+
 **Daaaahh!** Ofcourse there are `MiddleWares` in **frodo**.
-You can create a folder named `filter` in your project's folder and declare
-your MiddleWare there.
+You can create a folder named `filter` in your project's folder
+and declare your MiddleWare there.
 
 Example: `filters.go` inside the `./filters` folder.
 
@@ -125,8 +130,10 @@ Example: `filters.go` inside the `./filters` folder.
 ```
 
 ## Release History
-__Version: 0.9.2 Preview__
+
+**Version: 0.9.2 Preview**
 
 ## License
-Copyright (c) 2014 __Eugene Mutai__
+
+Copyright (c) 2014 **Eugene Mutai**
 Licensed under the [MIT license](http://mit-license.org/)
