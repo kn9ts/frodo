@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-const errorMessage string = "[WARNING] Headers were already written. Can not write out another one."
+const errorMessage string = "[ERROR] Headers were already written."
 
 // AppResponseWriter is used to hijack/embed http.ResponseWriter
 // thus making it satisfy the ResponseWriter interface, we then add a written boolean property
