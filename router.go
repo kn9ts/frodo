@@ -242,9 +242,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				Params:       ps,
 			}
 
-			// run the 1st handler
+			// call out the middleware Handles
 			// the rest shall be called to run by m.Next()
-			FrodoRequest.transact(FrodoWritter)
+			FrodoRequest.runHandleChain(FrodoWritter)
 		}
 
 		// if a handle was not found, the method is not a CONNECT request
@@ -329,29 +329,29 @@ func (r *Router) Serve() {
 
 // ServeOnPort is to used if you plan change the port to serve the application on
 func (r *Router) ServeOnPort(portNumber interface{}) {
-	var portNumberString string
+	var portNumberAsString string
 	// Converting an interface into the data type it should be
-	if pn, ok := portNumber.(int); ok {
-		portNumberString = strconv.Itoa(pn)
+	if pns, ok := portNumber.(int); ok {
+		portNumberAsString = strconv.Itoa(pns)
 	} else {
 		// if it is not a number/int provided then it must be a string
 		if pns, ok := portNumber.(string); ok {
 			if pns == "" {
 				pns = "3102"
 			}
-			portNumberString = pns
+			portNumberAsString = pns
 		} else {
 			log.Fatal("[ERROR] PortNumber can only be a numeral string or integer")
 			return
 		}
 	}
 
-	err := http.ListenAndServe(":"+portNumberString, r)
+	err := http.ListenAndServe(":"+portNumberAsString, r)
 	if err != nil {
 		log.Fatalf("[ERROR] Server failed to initialise: %s", err)
 		return
 	}
 
 	// If server successfully Launched
-	log.Printf("[LOG] Server deployed at: %s", portNumberString)
+	log.Printf("[LOG] Server deployed at: %s", portNumberAsString)
 }

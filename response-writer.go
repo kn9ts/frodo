@@ -2,6 +2,7 @@ package frodo
 
 import (
 	"bufio"
+	"errors"
 	"net"
 	"net/http"
 	"time"
@@ -9,76 +10,81 @@ import (
 	"log"
 )
 
-// WrappedResponseWriter is used to hijack/embed http.ResponseWriter
+const errorMessage string = "[WARNING] Headers were already written. Can not write out another one."
+
+// AppResponseWriter is used to hijack/embed http.ResponseWriter
 // thus making it satisfy the ResponseWriter interface, we then add a written boolean property
 // to trace when a write made, with a couple of other helpful properties
-type WrappedResponseWriter struct {
+type AppResponseWriter struct {
 	http.ResponseWriter
 	written   bool
 	timeStart time.Time
 	timeEnd   time.Time
-	duration  float64
+	duration  time.Duration
 	status    int
 	size      int64
-}
-
-// Header returns the response header
-// use it if one desires to change or add header info to the reponse
-// before it is sent out/back
-func (r *WrappedResponseWriter) Header() http.Header {
-	return r.ResponseWriter.Header()
+	method    string
+	route     string
 }
 
 // Write writes data back the client/creates the body
-func (r *WrappedResponseWriter) Write(bytes []byte) (int, error) {
-	r.WriteHeader(http.StatusOK)
-	n, err := r.ResponseWriter.Write(bytes)
-	if err != nil {
-		return n, err
+func (w *AppResponseWriter) Write(bytes []byte) (int, error) {
+	if !w.WriteHappened() {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		log.Println(errorMessage)
+		return 1, errors.New(errorMessage)
 	}
-	r.size += int64(n)
-	return n, nil
+
+	done, err := w.ResponseWriter.Write(bytes)
+	if err != nil {
+		return done, err
+	}
+	w.size += int64(done)
+	w.timeEnd = time.Now()
+	w.duration = time.Since(w.timeEnd)
+	return done, nil
 }
 
 // WriteHeader writes the Headers out
-func (r *WrappedResponseWriter) WriteHeader(code int) {
-	if r.written {
-		log.Println("[WARNING] Headers were already written. Can not write out another one.")
+func (w *AppResponseWriter) WriteHeader(code int) {
+	if w.WriteHappened() {
+		log.Println(errorMessage)
 		return
 	}
-	r.status = code
-	r.WriteHeader(code)
-	r.written = true
+	w.ResponseWriter.WriteHeader(code)
+	w.status = code
+	w.written = true
 }
 
 // WriteHappened checks if a write has been made
 // starts with a header being sent out
-func (r *WrappedResponseWriter) WriteHappened() bool {
-	return r.written
+func (w *AppResponseWriter) WriteHappened() bool {
+	return w.written
 }
 
 // Flush wraps response writer's Flush function.
-func (r *WrappedResponseWriter) Flush() {
-	r.ResponseWriter.(http.Flusher).Flush()
+func (w *AppResponseWriter) Flush() {
+	w.ResponseWriter.(http.Flusher).Flush()
 }
 
 // Hijack wraps response writer's Hijack function.
-func (r *WrappedResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	return r.ResponseWriter.(http.Hijacker).Hijack()
+func (w *AppResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return w.ResponseWriter.(http.Hijacker).Hijack()
 }
 
 // CloseNotify wraps response writer's CloseNotify function.
-func (r *WrappedResponseWriter) CloseNotify() <-chan bool {
-	return r.ResponseWriter.(http.CloseNotifier).CloseNotify()
+func (w *AppResponseWriter) CloseNotify() <-chan bool {
+	return w.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
 
 // Status gets the status code of the response
-func (r *WrappedResponseWriter) Status() int {
-	return r.status
+func (w *AppResponseWriter) Status() int {
+	return w.status
 }
 
 // Size returns the size of the response
 // about to be sent out
-func (r *WrappedResponseWriter) Size() int64 {
-	return r.size
+func (w *AppResponseWriter) Size() int64 {
+	return w.size
 }
