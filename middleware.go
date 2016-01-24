@@ -12,17 +12,16 @@ type Request struct {
 	Params
 }
 
-// Middleware declares the minimum method necessary for a handlers
-// to be sufficient for Frodo
+// Middleware declares the minimum implementation necessary for a handlers
+// to be used as Frodo's middleware route Handlers
 type Middleware interface {
 	Next(w *AppResponseWriter)
 }
 
-func (r *Request) transact(w *AppResponseWriter) {
+func (r *Request) runHandleChain(w *AppResponseWriter) {
 	r.nextPosition++
 	r.ResponseWriter = w
 	r.handlers[0](w, r)
-
 }
 
 // Next will be used to call the next handler in line/queue
@@ -34,8 +33,13 @@ func (r *Request) Next() {
 		nextHandler := r.handlers[r.nextPosition]
 		// move the cursor
 		r.nextPosition++
-		// now run the next handler
-		nextHandler(r.ResponseWriter, r)
+
+		// 1st check if a write has happened
+		// meaning a response has been issued out to the client
+		// if not run the next handler in line
+		if r.ResponseWriter.WriteHappened() == false {
+			nextHandler(r.ResponseWriter, r)
+		}
 	}
 	return
 }
