@@ -42,12 +42,12 @@ type Router struct {
 
 	// Configurable http.Handler which is called when no matching route is
 	// found. If it is not set, http.NotFound is used.
-	NotFound Handle
+	NotFoundHandler Handle
 
 	// Configurable http.Handler which is called when a request
 	// cannot be routed and HandleMethodNotAllowed is true.
 	// If it is not set, http.Error with http.StatusMethodNotAllowed is used.
-	MethodNotAllowed Handle
+	MethodNotAllowedHandler Handle
 
 	// Function to handle panics recovered from http handlers.
 	// It should be used to generate a error page and return the http error code
@@ -59,16 +59,6 @@ type Router struct {
 
 // Make sure the Router conforms with the http.Handler interface
 var _ http.Handler = New()
-
-// New returns a new initialized Router.
-// Path auto-correction, including trailing slashes, is enabled by default.
-func New() *Router {
-	return &Router{
-		RedirectTrailingSlash:  true,
-		RedirectFixedPath:      true,
-		HandleMethodNotAllowed: true,
-	}
-}
 
 // Get is a shortcut for router.Handle("GET", path, handle)
 func (r *Router) Get(path string, handle ...Handle) {
@@ -115,9 +105,9 @@ func (r *Router) Match(httpVerbs Methods, path string, handle ...Handle) {
 	}
 }
 
-// All method adds the Handle to all HTTP methods/HTTP verbs for the route given
+// Any method adds the Handle to all HTTP methods/HTTP verbs for the route given
 // it does not add routing Handlers for HEADER and OPTIONS HTTP verbs
-func (r *Router) All(path string, handle ...Handle) {
+func (r *Router) Any(path string, handle ...Handle) {
 	r.Match(Methods{"GET", "POST", "PUT", "DELETE", "PATCH"}, path, handle...)
 }
 
@@ -189,6 +179,37 @@ func (r *Router) ServeFiles(path string, root http.FileSystem) {
 		req.URL.Path = req.GetParam("filepath")
 		fileServer.ServeHTTP(w, req.Request)
 	})
+}
+
+// NotFound can be used to define custom routes to handle NotFound routes
+func (r *Router) NotFound(handler Handle) {
+	r.NotFoundHandler = handler
+}
+
+// MethodNotAllowed can be used to define custom routes
+// to handle Methods that are not allowed
+func (r *Router) MethodNotAllowed(handler Handle) {
+	r.MethodNotAllowedHandler = handler
+}
+
+// ServerError can be used to define custom routes to handle OnServerError routes
+func (r *Router) ServerError(handler Handle) {
+	r.PanicHandler = handler
+}
+
+// On404 is shortform for NotFound
+func (r *Router) On404(handler Handle) {
+	r.NotFound(handler)
+}
+
+// On405 is shortform for NotFound
+func (r *Router) On405(handler Handle) {
+	r.MethodNotAllowed(handler)
+}
+
+// On500 is shortform for ServerError
+func (r *Router) On500(handler Handle) {
+	r.ServerError(handler)
 }
 
 func (r *Router) recover(w *ResponseWriter, req *Request) {
@@ -310,9 +331,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 			handle, ps, _ := r.trees[method].getValue(req.URL.Path)
 			if handle != nil {
-				if r.MethodNotAllowed != nil {
+				if r.MethodNotAllowedHandler != nil {
 					FrodoRequest.Params = ps
-					r.MethodNotAllowed(&FrodoWritter, &FrodoRequest)
+					r.MethodNotAllowedHandler(&FrodoWritter, &FrodoRequest)
 				} else {
 					http.Error(w,
 						http.StatusText(http.StatusMethodNotAllowed),
@@ -326,8 +347,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 
 	//Handle 404
-	if r.NotFound != nil {
-		r.NotFound(&FrodoWritter, &FrodoRequest)
+	if r.NotFoundHandler != nil {
+		r.NotFoundHandler(&FrodoWritter, &FrodoRequest)
 	}
 
 	// If there is not Handle for a 404 error use Go's w
