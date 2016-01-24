@@ -242,8 +242,8 @@ func (r *Router) Lookup(method, path string) ([]Handle, Params, bool) {
 // ServeHTTP makes the router implement the http.Handler interface.
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// 1st things 1st, wrap the response writter
-	// to add the extra functionality we want
-	// basically trace when a write happens
+	// to add the extra functionality we want basically
+	// trace when a write happens
 	FrodoWritter := ResponseWriter{
 		ResponseWriter: w,
 		timeStart:      time.Now(),
@@ -258,8 +258,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		// files []*UploadFile
 	}
 
-	// ---------- 500: Internal Server Error -----------
-	// If a panic/error takes place while process, recover and run PanicHandle if defined
+	// ---------- Handle 500: Internal Server Error -----------
+	// If a panic/error takes place while process,
+	// recover and run PanicHandle if defined
 	defer r.recover(&FrodoWritter, &FrodoRequest)
 
 	if root := r.trees[req.Method]; root != nil {
@@ -334,21 +335,20 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				if r.MethodNotAllowedHandler != nil {
 					FrodoRequest.Params = ps
 					r.MethodNotAllowedHandler(&FrodoWritter, &FrodoRequest)
-				} else {
-					http.Error(w,
-						http.StatusText(http.StatusMethodNotAllowed),
-						http.StatusMethodNotAllowed,
-					)
+					return
 				}
+				// if no MethodNotAllowedHandler found, just throw an error the old way
+				http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 				return
 			}
 		}
 		return
 	}
 
-	//Handle 404
+	// Handle 404
 	if r.NotFoundHandler != nil {
 		r.NotFoundHandler(&FrodoWritter, &FrodoRequest)
+		return
 	}
 
 	// If there is not Handle for a 404 error use Go's w
