@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -42,73 +43,73 @@ type Router struct {
 
 	// Configurable http.Handler which is called when no matching route is
 	// found. If it is not set, http.NotFound is used.
-	NotFoundHandler Handle
+	NotFoundHandler Handler
 
 	// Configurable http.Handler which is called when a request
 	// cannot be routed and HandleMethodNotAllowed is true.
 	// If it is not set, http.Error with http.StatusMethodNotAllowed is used.
-	MethodNotAllowedHandler Handle
+	MethodNotAllowedHandler Handler
 
 	// Function to handle panics recovered from http handlers.
 	// It should be used to generate a error page and return the http error code
 	// 500 (Internal Server Error).
 	// The handler can be used to keep your server from crashing because of
 	// unrecovered panics.
-	PanicHandler Handle
+	PanicHandler Handler
 }
 
 // Make sure the Router conforms with the http.Handler interface
 var _ http.Handler = New()
 
 // Get is a shortcut for router.Handle("GET", path, handle)
-func (r *Router) Get(path string, handle ...Handle) {
-	r.Handle("GET", path, handle...)
+func (r *Router) Get(path string, handlers ...interface{}) {
+	r.Handle("GET", path, handlers...)
 }
 
 // Head is a shortcut for router.Handle("HEAD", path, ...handle)
-func (r *Router) Head(path string, handle ...Handle) {
-	r.Handle("HEAD", path, handle...)
+func (r *Router) Head(path string, handlers ...interface{}) {
+	r.Handle("HEAD", path, handlers...)
 }
 
 // Options is a shortcut for router.Handle("OPTIONS", path, ...handle)
-func (r *Router) Options(path string, handle ...Handle) {
-	r.Handle("OPTIONS", path, handle...)
+func (r *Router) Options(path string, handlers ...interface{}) {
+	r.Handle("OPTIONS", path, handlers...)
 }
 
 // Post is a shortcut for router.Handle("POST", path, ...handle)
-func (r *Router) Post(path string, handle ...Handle) {
-	r.Handle("POST", path, handle...)
+func (r *Router) Post(path string, handlers ...interface{}) {
+	r.Handle("POST", path, handlers...)
 }
 
 // Put is a shortcut for router.Handle("PUT", path, ...handle)
-func (r *Router) Put(path string, handle ...Handle) {
-	r.Handle("PUT", path, handle...)
+func (r *Router) Put(path string, handlers ...interface{}) {
+	r.Handle("PUT", path, handlers...)
 }
 
 // Patch is a shortcut for router.Handle("PATCH", path, ...handle)
-func (r *Router) Patch(path string, handle ...Handle) {
-	r.Handle("PATCH", path, handle...)
+func (r *Router) Patch(path string, handlers ...interface{}) {
+	r.Handle("PATCH", path, handlers...)
 }
 
 // Delete is a shortcut for router.Handle("DELETE", path, ...handle)
-func (r *Router) Delete(path string, handle ...Handle) {
-	r.Handle("DELETE", path, handle...)
+func (r *Router) Delete(path string, handlers ...interface{}) {
+	r.Handle("DELETE", path, handlers...)
 }
 
 // Match adds the Handle to the provided Methods/HTTPVerbs for a given route
 // EG. GET/POST from /home to have the same Handle
-func (r *Router) Match(httpVerbs Methods, path string, handle ...Handle) {
+func (r *Router) Match(httpVerbs Methods, path string, handlers ...interface{}) {
 	if len(httpVerbs) > 0 {
 		for _, verb := range httpVerbs {
-			r.Handle(strings.ToUpper(verb), path, handle...)
+			r.Handle(strings.ToUpper(verb), path, handlers...)
 		}
 	}
 }
 
 // Any method adds the Handle to all HTTP methods/HTTP verbs for the route given
 // it does not add routing Handlers for HEADER and OPTIONS HTTP verbs
-func (r *Router) Any(path string, handle ...Handle) {
-	r.Match(Methods{"GET", "POST", "PUT", "DELETE", "PATCH"}, path, handle...)
+func (r *Router) Any(path string, handlers ...interface{}) {
+	r.Match(Methods{"GET", "POST", "PUT", "DELETE", "PATCH"}, path, handlers...)
 }
 
 // Handle registers a new request handle with the given path and method.
@@ -119,10 +120,45 @@ func (r *Router) Any(path string, handle ...Handle) {
 // This function is intended for bulk loading and to allow the usage of less
 // frequently used, non-standardized or custom methods (e.g. for internal
 // communication with a proxy).
-func (r *Router) Handle(method, path string, handle ...Handle) {
+func (r *Router) Handle(method, path string, handlers ...interface{}) {
+	// Two things satisfy the Middleware interface
+	// Controller and a Handler
 	if path[0] != '/' {
 		panic("path must begin with '/' in path '" + path + "'")
 	}
+
+	// this is used to collect all Handlers
+	var middleware = make([]Middleware, len(handlers))
+
+	for pos, h := range handlers {
+		// Check to see if a Handler was provided if not
+		v := reflect.ValueOf(h).Type()
+		fmt.Printf("==> Handler provided: %s\n", v)
+
+		var handle Middleware
+
+		// Debug: First of check if it is a Frodo.Handler type
+		// might have been altered on first/previous loop
+		// if not check the function if it suffices the Handle type pattern
+		// If it does -- func(http.ResponseWriter, *Request)
+		// then convert it to a Frodo.Handler type
+		if value, isHandler := h.(func(http.ResponseWriter, *Request)); isHandler && v.Kind().String() == "func" {
+			// morph it to it's dynamic data type
+			handle = makeHandler(value)
+		} else {
+			// It is not a Handler, checked if it is a Controller
+			if ctrl, isController := h.(ControllerInterface); isController {
+				fmt.Println("converting struct to Frodo.Controller")
+				handle = ctrl
+			} else {
+				panic("Error: expected h arguement provided to be an extension of " +
+					"Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
+			}
+		}
+		// replace the Middleware with correct Handler
+		middleware[pos] = handle
+	}
+	fmt.Printf("%v and the no %d\n", middleware, len(middleware))
 
 	if r.trees == nil {
 		r.trees = make(map[string]*node)
@@ -134,14 +170,8 @@ func (r *Router) Handle(method, path string, handle ...Handle) {
 		r.trees[method] = root
 	}
 
-	// Instantiate a Handler type variable
-	var handlers []Handle
-	// Add all the handlers to it
-	handlers = append(handlers, handle...)
-	fmt.Printf("%v and the no %d\n", handlers, len(handle))
-
 	// store them to it's route node
-	root.addRoute(path, handlers)
+	root.addRoute(path, middleware)
 }
 
 // Handler is an adapter which allows the usage of an
@@ -182,33 +212,33 @@ func (r *Router) ServeFiles(path string, root http.FileSystem) {
 }
 
 // NotFound can be used to define custom routes to handle NotFound routes
-func (r *Router) NotFound(handler Handle) {
+func (r *Router) NotFound(handler Handler) {
 	r.NotFoundHandler = handler
 }
 
 // MethodNotAllowed can be used to define custom routes
 // to handle Methods that are not allowed
-func (r *Router) MethodNotAllowed(handler Handle) {
+func (r *Router) MethodNotAllowed(handler Handler) {
 	r.MethodNotAllowedHandler = handler
 }
 
 // ServerError can be used to define custom routes to handle OnServerError routes
-func (r *Router) ServerError(handler Handle) {
+func (r *Router) ServerError(handler Handler) {
 	r.PanicHandler = handler
 }
 
 // On404 is shortform for NotFound
-func (r *Router) On404(handler Handle) {
+func (r *Router) On404(handler Handler) {
 	r.NotFound(handler)
 }
 
 // On405 is shortform for NotFound
-func (r *Router) On405(handler Handle) {
+func (r *Router) On405(handler Handler) {
 	r.MethodNotAllowed(handler)
 }
 
 // On500 is shortform for ServerError
-func (r *Router) On500(handler Handle) {
+func (r *Router) On500(handler Handler) {
 	r.ServerError(handler)
 }
 
@@ -232,7 +262,7 @@ func (r *Router) recover(w *ResponseWriter, req *Request) {
 // If the path was found, it returns the handle function and the path parameter
 // values. Otherwise the third return value indicates whether a redirection to
 // the same path with an extra / without the trailing slash should be performed.
-func (r *Router) Lookup(method, path string) ([]Handle, Params, bool) {
+func (r *Router) Lookup(method, path string) ([]Middleware, Params, bool) {
 	if root := r.trees[method]; root != nil {
 		return root.getValue(path)
 	}
@@ -254,7 +284,6 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// Wrap the supplied http.Request
 	FrodoRequest := Request{
 		Request: req,
-		// params, form - map[string]string,
 		// files []*UploadFile
 	}
 
@@ -269,21 +298,21 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		// get the Handle of the route path requested
 		handlers, ps, tsr := root.getValue(path)
 
-		// if []Handle was found were found, run it!
+		// if []Middleware was found were found, run it!
 		noOfHandlers := len(handlers)
 		if noOfHandlers > 0 {
 			// if the 1st handler is defined, run it
-			FrodoRequest := &Request{
-				Request:      req,
-				handlers:     handlers[:noOfHandlers],
-				total:        noOfHandlers,
-				nextPosition: 0,
-				Params:       ps,
+			FrodoRequest.Params = ps
+			FrodoRequest.RequestMiddleware = &RequestMiddleware{
+				handlers:       handlers[:],
+				total:          noOfHandlers,
+				nextPosition:   0,
+				ResponseWriter: &FrodoWritter,
+				Request:        &FrodoRequest,
 			}
-
-			// call out the middleware Handles
+			// Trigger the middleware chain of handlers to be triggered one by one
 			// the rest shall be called to run by m.Next()
-			FrodoRequest.runHandleChain(&FrodoWritter)
+			FrodoRequest.RequestMiddleware.chainReaction()
 		}
 
 		// if a handle was not found, the method is not a CONNECT request
