@@ -1,158 +1,71 @@
-# Frodo [Go Web Micro Framework]
+# Frodo (A Tiny Go Web Framework)
 
-Frodo is a Go mini web framework inspired by the sweet/beautiful parts that make up Laravel(php), Slim (php) and ExpressJS(node.js).
-<!-- I built it to so as to learn Go, and also how frameworks work. -->
+[Frodo](http://godoc.org/github.com/kn9ts/frodo) is a Go micro
+web framework inspired by ExpressJS.
 
-Looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
+<!-- I built it to so as to learn Go, and also how
+frameworks work. A big thanks to TJ Holowaychuk too
+for the inspiration -->
 
-##### `Hello World` example:
+Are you looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
 
-```go
-package main
+#### Updates
 
-import (
-    "net/http"
-    "github.com/kn9ts/frodo"
-)
+- Intergrated and using [httprouter](https://github.com/julienschmidt/httprouter)
+- Accepts middleware now by default, one or more
 
-func main()  {
-    // Create a new instance of Frodo
-    App := Frodo.New()
-
-    // Add the root route
-    App.Get("/", func(w http.ResponseWriter, r *Frodo.Request) {
-        // https://www.youtube.com/watch?v=vjW8wmF5VWc
-        w.Write([]byte("Hello World!!!"))
-    })
-
-    App.Serve() // Open in browser http://localhost:3102/
-}
-```
-
-##### A big `Hello world` example:
+#### `Hello world` example
 
 ```go
 package main
 
 import (
-	"net/http"
-	"github.com/kn9ts/frodo"
-	"gopkg.in/unrolled/render.v1"
-	"./filters"
-	"./controller"
+		"net/http"
+		"github.com/kn9ts/frodo"
 )
 
-func main()  {
-	// Create a new instance of Frodo
-	App := Frodo.New()
+func one(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello, am the 1st middleware!")
+	// fmt.Fprint(w, "Hello, I'm 1st!\n")
+	r.Next()
+}
 
-	// Yes, you can use the famous old render package to ender your views
-	Response := render.New(render.Options{})
+func two(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello, am function no. 2!")
+	// fmt.Fprint(w, "Hello, am function no. 2!\n")
+	r.Next()
+}
 
-	// Add the root route
-	App.Get("/", func(w http.ResponseWriter, r *Frodo.Request) {
-		// https://www.youtube.com/watch?v=vjW8wmF5VWc
-		w.Write([]byte("Hey, Watch Me Nae Nae!!!"))
-	})
+func three(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello, am function no 3!")
+	fmt.Fprint(w, "Hey, am function no. 3!\n")
+}
 
-	// ------ Controller Awesomeness! ------
-	// Passing a controller instead of a callback function, runs Index method by default
-	App.Get("/home", &controller.Home{})
+func nameFunction(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello there, ", r.GetParam("name"))
+	fmt.Fprintf(w, "Hello there, %s!\n", r.GetParam("name"))
+}
 
-	// ----- Methods and Dynamic routes -----
-	// You can declare which method in a controller should be called for the specified route
-	// Oh yeah! you can name your routes eg. user-profile
-	App.Post("/profile/{name}", &controller.Home{}, Frodo.Use{
-		Method: "Profile",
-		Name: "user-profile",
-	})
+func main() {
+	app := frodo.New()
 
-	// ----- Multiple Methods -----
-	// How about declaring more than one method to accept a specific Request, HELL YES!!!
-	App.Match(Frodo.Methods{"GET", "POST"}, "/home", func(w http.ResponseWriter, r *Frodo.Request) {
-		Response.HTML(w, http.StatusOK, "hello", nil)
-	})
+	app.Get("/", one, two, three)
+	app.Get("/hello/:name", one, nameFunction)
 
-	App.AddFilters(filters.MiddleWare)
-	App.Serve() // Open in browser http://localhost:3102/
+	app.Serve()
 }
 ```
 
-## Controllers
-From the above example you can observe that **Frodo** can also use `controllers` instead of the usual callback function passed. The `controller` used above with the route mapping would look as follows, placed in the `controllers` folder, which is in the root directory of your project.
+#### Coming soon
 
-The file name does not matter but the package name matters. It then should embed `Frodo.Controller` struct so as to inherit **Frodo's** controller functionality.
-
-`controller.Home{}` in `./controllers/home.go` file used above would be:
-
-```go
-package controller
-
-import (
-	"github.com/kn9ts/frodo"
-	"net/http"
-)
-
-// Home is plays an example of a controller
-type Home struct {
-	Frodo.Controller
-}
-
-// Index is the default route handler for "/" route
-func (h *Home) Index(w http.ResponseWriter, r *Frodo.Request) {
-	w.Write([]byte("Hello world, a message from Home controller."))
-}
-
-func (h *Home) Profile(w http.ResponseWriter, r *Frodo.Request) {
-	w.Write([]byte("Hey, Watch Me, " + r.Param("name") + ", Dougie from home controller."))
-}
-```
-
-
-## Middleware/Application Filters
-**Owh Yeah!** Ofcourse you saw `Filters or MiddleWare` added just before we initialized the server. So you can create a folder named `filter` in your project's folder and declare your MiddleWare there, for example the above `filter.MiddleWare` would look like this when declared in a file (`filters.go`) inside the `./filters` folder.
-
-```go
-package filters
-
-import (
-	"github.com/kn9ts/frodo"
-	"net/http"
-)
-
-// Create a Filter instance
-var MiddleWare = Frodo.NewFilters()
-
-func init() {
-
-	// Adding application `Before` filters
-	MiddleWare.Before(func(w http.ResponseWriter, r *Frodo.Request) {
-		// Do something here
-	})
-
-	// Adding application `After` filters
-	MiddleWare.After(func(w http.ResponseWriter, r *Frodo.Request) {
-		// Do something here
-	})
-
-	// Adding route secific filters/middleware
-	// pass the exact name of route pattern of the route you want to run the following middleware
-	MiddleWare.Filter("user-profile", func(w http.ResponseWriter, r *Frodo.Request) {
-		// do something here before the router named 'user-profile'
-		// for example check if the name is 'Eugene'
-		if r.Param("name") == "Eugene" {
-			// Yes! the name passed in the params is Eugene, it has passed
-		} else {
-			// Name does not match. Do something if it has not passed
-		}
-	})
-
-}
-```
+- Controllers
+- Ability to detect CRUB requests and run the right controller method
 
 ## Release History
-__Version: 0.9.1 Preview__
+
+**Version: 0.10.0**
 
 ## License
-Copyright (c) 2014 __Eugene Mutai__
+
+Copyright (c) 2014 **Eugene Mutai**
 Licensed under the [MIT license](http://mit-license.org/)
