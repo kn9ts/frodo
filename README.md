@@ -14,7 +14,9 @@ Are you looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/f
 - Intergrated and using [httprouter](https://github.com/julienschmidt/httprouter)
 - Accepts middleware now by default, one or more
 
-#### `Hello world` example
+#### "Hello world" example
+
+The `main.go` file:
 
 ```go
 package main
@@ -23,6 +25,21 @@ import (
 		"net/http"
 		"github.com/kn9ts/frodo"
 )
+
+func main() {
+	app := frodo.New()
+
+	app.Get("/", one, two, three)
+	app.Get("/hello/:name", one, nameFunction)
+
+	app.Serve()
+}
+```
+
+And the functions passed as middleware would look like:
+
+```go
+package main
 
 func one(w http.ResponseWriter, r *frodo.Request) {
 	fmt.Println("Hello, am the 1st middleware!")
@@ -45,21 +62,12 @@ func nameFunction(w http.ResponseWriter, r *frodo.Request) {
 	fmt.Println("Hello there, ", r.GetParam("name"))
 	fmt.Fprintf(w, "Hello there, %s!\n", r.GetParam("name"))
 }
-
-func main() {
-	app := frodo.New()
-
-	app.Get("/", one, two, three)
-	app.Get("/hello/:name", one, nameFunction)
-
-	app.Serve()
-}
 ```
 
 #### Coming soon
 
 - Controllers
-- Ability to detect CRUB requests and run the right controller method
+- Ability to detect CRUD requests and run the right controller method
 
 ## Release History
 
