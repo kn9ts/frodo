@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-const errorMessage string = "[ERROR] Headers were already written."
+const customErrorMessage string = "[ERROR] Headers were already written."
 
 // ResponseWriter is used to hijack/embed http.ResponseWriter
 // thus making it satisfy the ResponseWriter interface, we then add a written boolean property
@@ -35,8 +35,8 @@ func (w *ResponseWriter) Write(bytes []byte) (int, error) {
 	}
 
 	if w.ResponseSent() {
-		log.Println(errorMessage)
-		return 1, errors.New(errorMessage)
+		log.Println(customErrorMessage)
+		return 1, errors.New(customErrorMessage)
 	}
 
 	sent, err := w.ResponseWriter.Write(bytes)
@@ -52,7 +52,7 @@ func (w *ResponseWriter) Write(bytes []byte) (int, error) {
 // WriteHeader writes the Headers out
 func (w *ResponseWriter) WriteHeader(code int) {
 	if w.HeaderWritten() {
-		log.Println(errorMessage)
+		log.Println(customErrorMessage)
 		return
 	}
 	w.ResponseWriter.WriteHeader(code)
