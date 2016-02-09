@@ -131,11 +131,12 @@ func (r *Router) Handle(method, path string, handlers ...interface{}) {
 	var middleware = make([]Middleware, len(handlers))
 
 	for pos, h := range handlers {
+		// to recieve the typecasted Controller or Handler
+		var handle Middleware
+
 		// Check to see if a Handler was provided if not
 		v := reflect.ValueOf(h).Type()
 		fmt.Printf("==> Handler provided: %s\n", v)
-
-		var handle Middleware
 
 		// Debug: First of check if it is a Frodo.Handler type
 		// might have been altered on first/previous loop
@@ -147,12 +148,12 @@ func (r *Router) Handle(method, path string, handlers ...interface{}) {
 			handle = makeHandler(value)
 		} else {
 			// It is not a Handler, checked if it is a Controller
-			if ctrl, isController := h.(ControllerInterface); isController {
-				fmt.Println("converting struct to Frodo.Controller")
+			if ctrl, isController := h.(CRUDController); isController {
+				// fmt.Println("converting struct related to Frodo.BaseController")
 				handle = ctrl
 			} else {
-				panic("Error: expected h arguement provided to be an extension of " +
-					"Frodo.Controller or \"func(http.ResponseWriter, *Frodo.Request)\" type")
+				panic("Error: expected Controller arguement provided to be an extension of " +
+					"Frodo.BaseController or \"func(http.ResponseWriter, *Frodo.Request)\" type")
 			}
 		}
 		// replace the Middleware with correct Handler
@@ -313,6 +314,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			// Trigger the middleware chain of handlers to be triggered one by one
 			// the rest shall be called to run by m.Next()
 			FrodoRequest.RequestMiddleware.chainReaction()
+			return
 		}
 
 		// if a handle was not found, the method is not a CONNECT request
