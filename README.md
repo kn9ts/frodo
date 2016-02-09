@@ -1,4 +1,4 @@
-# Frodo (Go Web Micro Framework)
+# Frodo (A Tiny Go Web Framework)
 
 [Frodo](http://godoc.org/github.com/kn9ts/frodo) is a Go micro
 web framework inspired by ExpressJS.
@@ -9,7 +9,12 @@ for the inspiration -->
 
 Are you looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
 
-##### `Hello world` example
+#### Updates
+
+- Intergrated and using [httprouter](https://github.com/julienschmidt/httprouter)
+- Accepts middleware now by default, one or more
+
+#### `Hello world` example
 
 ```go
 package main
@@ -19,119 +24,46 @@ import (
 		"github.com/kn9ts/frodo"
 )
 
-func main()  {
-		// Create a new instance of frodo
-		App := frodo.New()
+func one(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello, am the 1st middleware!")
+	// fmt.Fprint(w, "Hello, I'm 1st!\n")
+	r.Next()
+}
 
-		// Add the root route
-		App.Get("/", func(w http.ResponseWriter, r *frodo.Request) {
-				w.Write([]byte("Hello World!"))
-		})
+func two(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello, am function no. 2!")
+	// fmt.Fprint(w, "Hello, am function no. 2!\n")
+	r.Next()
+}
 
-		App.Serve() // Open in browser http://localhost:3102/
+func three(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello, am function no 3!")
+	fmt.Fprint(w, "Hey, am function no. 3!\n")
+}
+
+func nameFunction(w http.ResponseWriter, r *frodo.Request) {
+	fmt.Println("Hello there, ", r.GetParam("name"))
+	fmt.Fprintf(w, "Hello there, %s!\n", r.GetParam("name"))
+}
+
+func main() {
+	app := frodo.New()
+
+	app.Get("/", one, two, three)
+	app.Get("/hello/:name", one, nameFunction)
+
+	app.Serve()
 }
 ```
 
-##### A bigger `Hello world` example
+#### Coming soon
 
-```go
-package main
-
-import (
-	"net/http"
-	"github.com/kn9ts/frodo"
-	"gopkg.in/unrolled/render.v1"
-)
-
-func main()  {
-	// Create a new instance of frodo
-	App := frodo.New()
-
-	// Yes, you can use the famous old render package to ender your views
-	Response := render.New(render.Options{})
-
-	// Add the root route
-	App.Get("/", func(w http.ResponseWriter, r *frodo.Request) {
-		// if you don't get it
-		// --> https://www.youtube.com/watch?v=vjW8wmF5VWc
-		w.Write([]byte("Hey, Watch Me Nae Nae!!!"))
-	})
-
-	// ------ Controller Awesomeness! ------
-	// Passing a controller instead of a callback function, runs Index method by default
-	App.Get("/home", &controller.Home{})
-
-	// ----- Methods and Dynamic routes -----
-	// You can declare which method in a controller should be called for the specified route
-	// Oh yeah! you can name your routes eg. user-profile
-	App.Post("/profile/{name}", &controller.Home{}, frodo.Options{
-		Method: "Profile",
-		Name: "user-profile",
-	})
-
-	// ----- Multiple Methods -----
-	// How about declaring more than one method to accept a specific Request, HELL YES!!!
-	App.Match(frodo.Methods{"GET", "POST"}, "/home", func(w http.ResponseWriter, r *frodo.Request) {
-		Response.HTML(w, http.StatusOK, "Hello! We are home!", nil)
-	})
-
-	App.Serve() // Open in browser http://localhost:3102/
-}
-```
-
-## Controllers
-From the above example you can observe that **frodo** can also use
-`controllers` instead of the usual route handlers.
-
-The `controller` used above with the route mapping would look as described below; placed in
-the `controllers` folder, which should be in root directory of your project.
-
-The file name does not matter but the package name matters.
-It then should embed `frodo.Controller` struct so as to
-inherit all **frodo's** controller functionality.
-
-`controller.Home{}` in `./controllers/home.go` would look like this:
-
-```go
-package controller
-
-import (
-	"github.com/kn9ts/frodo"
-	"net/http"
-)
-
-// Home is plays an example of a controller
-type Home struct {
-	*frodo.Controller
-}
-
-// Index is the default route method for "/" route
-// also if a route controller method is not found,
-// it falls back to the Index method
-func (h *Home) Index(w http.ResponseWriter, r *frodo.Request) {
-	w.Write([]byte("Hello world, a message from Home controller."))
-}
-
-func (h *Home) Profile(w http.ResponseWriter, r *frodo.Request) {
-	w.Write([]byte("Hey, Watch Me, " + r.Param("name") + ", Dougie from home controller."))
-}
-```
-
-
-## Middleware/Application Filters
-
-**Daaaahh!** Ofcourse there are `MiddleWares` in **frodo**.
-You can create a folder named `filter` in your project's folder
-and declare your MiddleWare there.
-
-Example: `filters.go` inside the `./filters` folder.
-
-```go
-```
+- Controllers
+- Ability to detect CRUB requests and run the right controller method
 
 ## Release History
 
-**Version: 0.9.2 Preview**
+**Version: 0.10.0**
 
 ## License
 
