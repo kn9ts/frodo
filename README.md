@@ -11,8 +11,8 @@ Are you looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/f
 
 #### Updates
 
-- Intergrated and using [httprouter](https://github.com/julienschmidt/httprouter)
-- Accepts middleware now by default, one or more
+- Intergrated and using [httprouter](https://github.com/julienschmidt/httprouter) as the framework's routing system
+- Accepts handlers as middleware now by default, one or more
 
 #### "Hello world" example
 
@@ -66,8 +66,10 @@ func nameFunction(w http.ResponseWriter, r *frodo.Request) {
 
 #### Coming soon
 
-- Controllers
-- Ability to detect CRUD requests and run the right controller method
+- Controllers (which will implement a BaseController)
+- Controllers can be mixed with the common handlers as middleware
+- Ability to detect CRUD requests and run the right controller method,
+if a controllers are passed as middleware
 
 ## Release History
 
