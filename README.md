@@ -1,17 +1,15 @@
 # Frodo (A Tiny Go Web Framework)
 
-[Frodo](http://godoc.org/github.com/kn9ts/frodo) is a Go micro
-web framework inspired by ExpressJS.
+[Frodo](http://godoc.org/github.com/kn9ts/frodo) is a Go micro web framework inspired by ExpressJS.
 
-<!-- I built it to so as to learn Go, and also how
-frameworks work. A big thanks to TJ Holowaychuk too
-for the inspiration -->
+__NOTE:__ _I built it to so as to learn Go, and also how frameworks work. A big thanks to TJ Holowaychuk too
+for the inspiration_
 
-Are you looking for **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
+Are you looking for the **[GoDocs Documentation](http://godoc.org/github.com/kn9ts/frodo)**
 
 #### Updates
 
-- Intergrated and using [httprouter](https://github.com/julienschmidt/httprouter) as the framework's routing system
+- Intergrated(actually interweaved into the code base) and using [httprouter](https://github.com/julienschmidt/httprouter) as the framework's routing system
 - Accepts handlers as middleware now by default, one or more
 
 #### "Hello world" example
@@ -64,12 +62,11 @@ func nameFunction(w http.ResponseWriter, r *frodo.Request) {
 }
 ```
 
-#### Coming soon
+#### To do (after Go sabitcal is over)
 
 - Controllers (which will implement a BaseController)
 - Controllers can be mixed with the common handlers as middleware
-- Ability to detect CRUD requests and run the right controller method,
-if a controllers are passed as middleware
+- Ability to detect CRUD requests and run the right controller method, if a controllers are passed as middleware
 
 ## Release History
 
