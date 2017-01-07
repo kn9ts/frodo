@@ -72,11 +72,6 @@ func (w *ResponseWriter) HeaderWritten() bool {
 	return w.headerWritten
 }
 
-// Flush wraps response writer's Flush function.
-func (w *ResponseWriter) Flush() {
-	w.ResponseWriter.(http.Flusher).Flush()
-}
-
 // Hijack wraps response writer's Hijack function.
 func (w *ResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return w.ResponseWriter.(http.Hijacker).Hijack()
