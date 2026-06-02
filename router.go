@@ -1,7 +1,6 @@
 package frodo
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"reflect"
@@ -136,7 +135,6 @@ func (r *Router) Handle(method, path string, handlers ...interface{}) {
 
 		// Check to see if a Handler was provided if not
 		v := reflect.ValueOf(h).Type()
-		fmt.Printf("==> Handler provided: %s\n", v)
 
 		// Debug: First of check if it is a Frodo.Handler type
 		// might have been altered on first/previous loop
@@ -159,7 +157,6 @@ func (r *Router) Handle(method, path string, handlers ...interface{}) {
 		// replace the Middleware with correct Handler
 		middleware[pos] = handle
 	}
-	fmt.Printf("%v and the no %d\n", middleware, len(middleware))
 
 	if r.trees == nil {
 		r.trees = make(map[string]*node)
@@ -198,7 +195,8 @@ func (r *Router) HandlerFunc(method, path string, handler http.HandlerFunc) {
 // of the Router's NotFound handler.
 // To use the operating system's file system implementation,
 // use http.Dir:
-//     router.ServeFiles("/src/*filepath", http.Dir("/var/www"))
+//
+//	router.ServeFiles("/src/*filepath", http.Dir("/var/www"))
 func (r *Router) ServeFiles(path string, root http.FileSystem) {
 	if len(path) < 10 || path[len(path)-10:] != "/*filepath" {
 		panic("path must end with /*filepath in path '" + path + "'")
@@ -334,7 +332,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 					req.URL.Path = path + "/"
 				}
 
-				http.Redirect(w, req, req.URL.String(), code)
+				http.Redirect(w, req, req.URL.RequestURI(), code)
 				return
 			}
 
@@ -346,7 +344,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				)
 				if found {
 					req.URL.Path = string(fixedPath)
-					http.Redirect(w, req, req.URL.String(), code)
+					http.Redirect(w, req, req.URL.RequestURI(), code)
 					return
 				}
 			}
@@ -373,7 +371,6 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				return
 			}
 		}
-		return
 	}
 
 	// Handle 404
